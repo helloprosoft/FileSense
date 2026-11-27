@@ -3,18 +3,16 @@
 from __future__ import annotations
 
 import json
-import os
 from datetime import datetime
 
 from PySide6.QtCore import Qt
-if os.environ.get("FILESENSE_QML_RUNTIME") == "1":
-    class _WidgetsUiOnly:
-        pass
 
-    QDialog = QHeaderView = QTextBrowser = QVBoxLayout = PushButton = SubtitleLabel = _WidgetsUiOnly
-else:
-    from PySide6.QtWidgets import QDialog, QHeaderView, QTextBrowser, QVBoxLayout
-    from qfluentwidgets import PushButton, SubtitleLabel
+
+class _WidgetsUiOnly:
+    """Placeholder for the retired Qt Widgets activity dialog."""
+
+
+QDialog = QHeaderView = QTextBrowser = QVBoxLayout = PushButton = SubtitleLabel = _WidgetsUiOnly
 
 from .app_common import make_table, resource_path, set_item
 

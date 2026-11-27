@@ -13,7 +13,7 @@ This guide is for maintaining, building, and issuing offline licenses for FileSe
 
 ## Run from source
 
-Use Python 3.10 or newer on Windows. The application has one third-party runtime dependency: `PySide6`, listed in `requirements.txt`. The QML edition does not need Qt Creator, a separate Qt installation, or Qt Fluent Widgets. From this folder, install the runtime dependency and run the app:
+Use Python 3.10 or newer on Windows. The application has one third-party runtime dependency: `PySide6`, listed in `requirements.txt`. The QML app does not need Qt Creator or a separate Qt installation. From this folder, install the runtime dependency and run the app:
 
 ```powershell
 py -m pip install -r requirements.txt

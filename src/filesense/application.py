@@ -3,10 +3,7 @@
 from __future__ import annotations
 
 import sys
-import os
 from pathlib import Path
-
-os.environ["FILESENSE_QML_RUNTIME"] = "1"
 
 from PySide6.QtCore import QUrl
 from PySide6.QtGui import QGuiApplication, QIcon

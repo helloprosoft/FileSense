@@ -1,4 +1,4 @@
-"""FileSense. Fluent Qt desktop interface for Windows."""
+"""Shared data, scanning, and utility helpers for FileSense."""
 
 from __future__ import annotations
 
@@ -20,42 +20,29 @@ from pathlib import Path
 
 from PySide6.QtCore import Qt, QDate, QItemSelectionModel, QPoint, QRectF, QSize, QSettings, QStorageInfo, QThread, QTimer, Signal
 from PySide6.QtGui import QAction, QColor, QFont, QIcon, QPainter, QPalette, QPixmap
-if os.environ.get("FILESENSE_QML_RUNTIME") == "1":
-    class _WidgetsUiOnly:
-        pass
 
-    (QAbstractItemView, QApplication, QtCheckBox, QDateEdit, QDialog, QFileDialog, QFrame,
-     QHBoxLayout, QHeaderView, QSizePolicy, QFileIconProvider, QLabel, QListWidget,
-     QMessageBox, QProgressBar, QPushButton, QScrollArea, QSpinBox, QSplitter, QStyle,
-     QStyleOptionButton, QTableWidgetItem, QTreeWidget, QTreeWidgetItem, QVBoxLayout,
-     QWidget, BodyLabel, CaptionLabel, CardWidget, FluentCheckBox, ComboBox, FluentIcon,
-     FluentWindow, LineEdit, PrimaryPushButton, PushButton, StrongBodyLabel,
-     MenuAnimationType, NavigationItemPosition, SubtitleLabel, TableWidget,
-     TabCloseButtonDisplayMode, TabWidget, TitleLabel, ToolButton, setTheme,
-     setThemeColor, Theme, FluentIconBase, CheckBoxIcon) = (_WidgetsUiOnly,) * 50
-    Theme.AUTO = None
-else:
-    from PySide6.QtWidgets import (
-        QAbstractItemView, QApplication, QCheckBox as QtCheckBox, QDateEdit, QDialog, QFileDialog, QFrame, QHBoxLayout, QHeaderView, QSizePolicy,
-        QFileIconProvider, QLabel, QListWidget, QMessageBox, QProgressBar, QPushButton,
-        QScrollArea, QSpinBox, QSplitter, QStyle, QStyleOptionButton, QTableWidgetItem, QTreeWidget, QTreeWidgetItem,
-        QVBoxLayout, QWidget,
-    )
-    from qfluentwidgets import (
-        BodyLabel, CaptionLabel, CardWidget, CheckBox as FluentCheckBox, ComboBox, FluentIcon,
-        FluentWindow, LineEdit, PrimaryPushButton, PushButton, StrongBodyLabel,
-        MenuAnimationType, NavigationItemPosition, SubtitleLabel, TableWidget, TabCloseButtonDisplayMode, TabWidget, TitleLabel,
-        ToolButton, setTheme, setThemeColor, Theme,
-    )
-    from qfluentwidgets.common.icon import FluentIconBase
-    from qfluentwidgets.components.widgets.check_box import CheckBoxIcon
+
+class _WidgetsUiOnly:
+    """Placeholder for the retired Qt Widgets interface; the app UI is QML."""
+
+
+(QAbstractItemView, QApplication, QtCheckBox, QDateEdit, QDialog, QFileDialog, QFrame,
+ QHBoxLayout, QHeaderView, QSizePolicy, QFileIconProvider, QLabel, QListWidget,
+ QMessageBox, QProgressBar, QPushButton, QScrollArea, QSpinBox, QSplitter, QStyle,
+ QStyleOptionButton, QTableWidgetItem, QTreeWidget, QTreeWidgetItem, QVBoxLayout,
+ QWidget, BodyLabel, CaptionLabel, CardWidget, FluentCheckBox, ComboBox, FluentIcon,
+ FluentWindow, LineEdit, PrimaryPushButton, PushButton, StrongBodyLabel,
+ MenuAnimationType, NavigationItemPosition, SubtitleLabel, TableWidget,
+ TabCloseButtonDisplayMode, TabWidget, TitleLabel, ToolButton, setTheme,
+ setThemeColor, Theme, FluentIconBase, CheckBoxIcon) = (_WidgetsUiOnly,) * 50
+Theme.AUTO = None
 
 
 ACCENT_COLOR = "#147F78"
 
 
 class CheckBox(FluentCheckBox):
-    """Shared Fluent checkbox with a compact, consistently sized indicator."""
+    """Legacy Qt Widgets checkbox retained for source compatibility."""
 
     INDICATOR_SIZE = 16
 
@@ -715,7 +702,7 @@ def confirm(parent: QWidget, title: str, text: str) -> bool:
 
 
 class NoScrollbarComboBox(ComboBox):
-    """Fluent dropdown with a clean popup and no visible scrollbars."""
+    """Legacy Qt Widgets dropdown with a compact popup."""
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

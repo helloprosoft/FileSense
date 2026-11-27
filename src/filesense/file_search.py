@@ -14,23 +14,16 @@ from typing import Any
 
 from PySide6.QtCore import Qt, QDate, QStorageInfo, QThread, Signal, QUrl
 from PySide6.QtGui import QDesktopServices
-if os.environ.get("FILESENSE_QML_RUNTIME") == "1":
-    class _WidgetsUiOnly:
-        pass
 
-    (QAbstractItemView, QFileDialog, QHBoxLayout, QListWidget, QListWidgetItem,
-     QMessageBox, QVBoxLayout, QWidget, BodyLabel, CaptionLabel, CardWidget,
-     FluentIcon, LineEdit, PrimaryPushButton, PushButton, StrongBodyLabel,
-     SubtitleLabel) = (_WidgetsUiOnly,) * 17
-else:
-    from PySide6.QtWidgets import (
-        QAbstractItemView, QFileDialog, QHBoxLayout, QListWidget, QListWidgetItem,
-        QMessageBox, QVBoxLayout, QWidget,
-    )
-    from qfluentwidgets import (
-        BodyLabel, CaptionLabel, CardWidget, FluentIcon, LineEdit,
-        PrimaryPushButton, PushButton, StrongBodyLabel, SubtitleLabel,
-    )
+
+class _WidgetsUiOnly:
+    """Placeholder for the retired Qt Widgets search screen."""
+
+
+(QAbstractItemView, QFileDialog, QHBoxLayout, QListWidget, QListWidgetItem,
+ QMessageBox, QVBoxLayout, QWidget, BodyLabel, CaptionLabel, CardWidget,
+ FluentIcon, LineEdit, PrimaryPushButton, PushButton, StrongBodyLabel,
+ SubtitleLabel) = (_WidgetsUiOnly,) * 17
 
 from .app_common import (
     CATEGORIES, CheckBox, QDateEdit, QHeaderView, QProgressBar, QTableWidgetItem, TableWidget,

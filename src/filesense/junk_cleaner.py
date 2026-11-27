@@ -17,23 +17,16 @@ from typing import Any
 
 from PySide6.QtCore import Qt, QThread, Signal, QUrl
 from PySide6.QtGui import QDesktopServices
-if os.environ.get("FILESENSE_QML_RUNTIME") == "1":
-    class _WidgetsUiOnly:
-        pass
 
-    (QAbstractItemView, QHBoxLayout, QHeaderView, QMessageBox, QProgressBar,
-     QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget, BodyLabel, CaptionLabel,
-     CardWidget, FluentIcon, PrimaryPushButton, PushButton, StrongBodyLabel,
-     SubtitleLabel, TitleLabel) = (_WidgetsUiOnly,) * 18
-else:
-    from PySide6.QtWidgets import (
-        QAbstractItemView, QHBoxLayout, QHeaderView, QMessageBox, QProgressBar,
-        QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget,
-    )
-    from qfluentwidgets import (
-        BodyLabel, CaptionLabel, CardWidget, FluentIcon, PrimaryPushButton,
-        PushButton, StrongBodyLabel, SubtitleLabel, TitleLabel,
-    )
+
+class _WidgetsUiOnly:
+    """Placeholder for the retired Qt Widgets cleanup screen."""
+
+
+(QAbstractItemView, QHBoxLayout, QHeaderView, QMessageBox, QProgressBar,
+ QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget, BodyLabel, CaptionLabel,
+ CardWidget, FluentIcon, PrimaryPushButton, PushButton, StrongBodyLabel,
+ SubtitleLabel, TitleLabel) = (_WidgetsUiOnly,) * 18
 
 from .app_common import format_bytes, send_to_recycle_bin
 

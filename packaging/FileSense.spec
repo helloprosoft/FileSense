@@ -67,7 +67,7 @@ binaries = []
 hiddenimports = []
 
 excluded_modules = [
-    "qfluentwidgets", "PySide6.Qt3DCore", "PySide6.Qt3DRender", "PySide6.Qt3DInput",
+    "PySide6.Qt3DCore", "PySide6.Qt3DRender", "PySide6.Qt3DInput",
     "PySide6.Qt3DAnimation", "PySide6.Qt3DExtras", "PySide6.QtCharts",
     "PySide6.QtDataVisualization", "PySide6.QtGraphs", "PySide6.QtGraphsWidgets",
     "PySide6.QtLocation", "PySide6.QtMultimedia", "PySide6.QtMultimediaWidgets",

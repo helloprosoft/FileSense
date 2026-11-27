@@ -1,20 +1,46 @@
-ProSoft FileSense License
-Copyright (c) 2026 ProSoft. All rights reserved.
+# FileSense Proprietary License
 
-This repository and the FileSense source code are proprietary. Making the
-repository publicly accessible permits viewing it on GitHub only. Unless
-ProSoft gives you prior written permission or applicable law requires
-otherwise, you may not copy, modify, publish, distribute, sublicense, sell,
-or create derivative works from this source code or the FileSense software.
+Copyright © 2026 [Copyright Holder]. All rights reserved.
 
-The FileSense application is licensed under the accompanying End User License
-Agreement in legal/EULA.txt. That agreement grants an individual a limited,
-personal, non-exclusive, non-transferable license to install and use the
-application for personal, non-commercial purposes. It does not grant a license
-to use the application or source code for business or commercial purposes.
+FileSense is proprietary software developed and maintained by [Copyright Holder].
 
-Third-party components are not covered by this license and remain subject to
-their respective licenses. See the relevant component's license and notices.
+## 1. Ownership
 
-For written permission or other licensing inquiries, contact:
-hello.prosoft.at@gmail.com
+The FileSense application, including its original source code, design, interface, branding, graphics and documentation, is the intellectual property of [Copyright Holder], except for third-party components identified separately.
+
+## 2. Permission to Use
+
+Users are granted a limited, non-exclusive, non-transferable license to download, install and use FileSense for personal or business purposes, subject to the terms of this license.
+
+## 3. Restrictions
+
+Without prior written permission from the copyright holder, users may not:
+
+- Copy, modify or redistribute the proprietary portions of FileSense.
+- Reverse engineer or decompile the proprietary portions, except where permitted by applicable law.
+- Sell, sublicense or commercially redistribute FileSense or its proprietary components.
+- Remove copyright notices or branding.
+
+## 4. Third-Party Components
+
+FileSense incorporates third-party software, including Qt, PySide6 and other open-source dependencies.
+
+These components are governed by their respective licenses, which remain applicable independently of this license.
+
+Nothing in this license restricts rights granted to users under applicable third-party open-source licenses, including the GNU Lesser General Public License (LGPL).
+
+In particular, users retain the rights granted by the LGPL to replace, modify and use covered LGPL components.
+
+## 5. Disclaimer of Warranty
+
+FileSense is provided "AS IS", without warranties of any kind, to the maximum extent permitted by applicable law.
+
+## 6. Limitation of Liability
+
+To the maximum extent permitted by applicable law, the copyright holder shall not be liable for indirect, incidental or consequential damages arising from the use of FileSense.
+
+## 7. Reservation of Rights
+
+All rights not expressly granted under this license are reserved by the copyright holder.
+
+For third-party component licensing information, refer to THIRD_PARTY_NOTICES.md.

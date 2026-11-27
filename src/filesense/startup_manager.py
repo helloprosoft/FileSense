@@ -19,23 +19,16 @@ from typing import Any
 
 from PySide6.QtCore import Qt, QSettings, QThread, QTimer, Signal
 from PySide6.QtGui import QFont
-if os.environ.get("FILESENSE_QML_RUNTIME") == "1":
-    class _WidgetsUiOnly:
-        pass
 
-    (QAbstractItemView, QHeaderView, QHBoxLayout, QLabel, QMessageBox, QProgressBar,
-     QTabWidget, QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget, BodyLabel,
-     CaptionLabel, CardWidget, FluentIcon, PrimaryPushButton, PushButton,
-     StrongBodyLabel, SubtitleLabel, TitleLabel) = (_WidgetsUiOnly,) * 20
-else:
-    from PySide6.QtWidgets import (
-        QAbstractItemView, QHeaderView, QHBoxLayout, QLabel, QMessageBox, QProgressBar,
-        QTabWidget, QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget,
-    )
-    from qfluentwidgets import (
-        BodyLabel, CaptionLabel, CardWidget, FluentIcon, PrimaryPushButton,
-        PushButton, StrongBodyLabel, SubtitleLabel, TitleLabel,
-    )
+
+class _WidgetsUiOnly:
+    """Placeholder for the retired Qt Widgets startup screen."""
+
+
+(QAbstractItemView, QHeaderView, QHBoxLayout, QLabel, QMessageBox, QProgressBar,
+ QTabWidget, QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget, BodyLabel,
+ CaptionLabel, CardWidget, FluentIcon, PrimaryPushButton, PushButton,
+ StrongBodyLabel, SubtitleLabel, TitleLabel) = (_WidgetsUiOnly,) * 20
 
 
 REGISTRY_LOCATIONS = (
