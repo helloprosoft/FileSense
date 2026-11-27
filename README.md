@@ -1,4 +1,5 @@
 ![Logo](assets/github_banner.png)
+![License](https://img.shields.io/badge/License-Proprietary-red)
 <p align="center">
   <img src="https://img.shields.io/badge/Status-Stable-brightgreen">
   <img src="https://img.shields.io/badge/Platform-Windows%2011-blue">
