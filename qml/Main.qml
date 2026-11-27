@@ -585,8 +585,8 @@ ApplicationWindow {
     }
     function duplicateDeleteSelectionCount() {
         var count = 0;
-        for (var i = 0; i < fileSense.rows.length; ++i) {
-            if (fileSense.rows[i].duplicateGroup && fileSense.rows[i].deleteSelected)
+        for (var i = 0; i < fileSense.duplicateRows.length; ++i) {
+            if (fileSense.duplicateRows[i].duplicateGroup && fileSense.duplicateRows[i].deleteSelected)
                 count++;
         }
         return count;
@@ -595,7 +595,8 @@ ApplicationWindow {
         duplicateResultRows.clear();
         var grouped = {};
         var order = [];
-        var rows = sortedResultRows(fileSense.rows || [], "duplicates");
+        var scope = duplicateMode === "Build a rule" ? "duplicateRule" : "duplicateFind";
+        var rows = sortedResultRows(fileSense.duplicateRows || [], scope);
         for (var i = 0; i < rows.length; ++i) {
             var row = rows[i];
             var key = String(row.duplicateGroup || "");
@@ -610,7 +611,8 @@ ApplicationWindow {
         for (var g = 0; g < order.length; ++g) {
             var groupKey = order[g];
             var entries = grouped[groupKey];
-            var expanded = duplicateExpandedGroups[groupKey] !== false;
+            var expansionKey = scope + "|" + groupKey;
+            var expanded = duplicateExpandedGroups[expansionKey] !== false;
             duplicateResultRows.append({
                 rowKind: "group", groupKey: groupKey, expanded: expanded,
                 name: (entries[0].name || "") + " (" + entries.length + " entries)",
@@ -632,7 +634,14 @@ ApplicationWindow {
         }
     }
     function toggleDuplicateGroup(groupKey) {
-        duplicateExpandedGroups[groupKey] = duplicateExpandedGroups[groupKey] === false;
+        var scope = duplicateMode === "Build a rule" ? "duplicateRule" : "duplicateFind";
+        var expansionKey = scope + "|" + groupKey;
+        duplicateExpandedGroups[expansionKey] = duplicateExpandedGroups[expansionKey] === false;
+        rebuildDuplicateResultRows();
+    }
+    function selectDuplicateMode(mode) {
+        duplicateMode = mode;
+        fileSense.setDuplicateMode(mode === "Build a rule" ? "rule" : "find");
         rebuildDuplicateResultRows();
     }
     function addDuplicateExcludedFolder(path) {
@@ -1102,24 +1111,35 @@ ApplicationWindow {
         }
     }
 
-    component SearchDateField: Item {
-        id: searchDateField
+    component CalendarDateField: Item {
+        id: calendarDateField
         property alias text: dateInput.text
         property string placeholderText: ""
         property string dateKey: ""
+        property int conditionIndex: -1
+        property string dateProperty: ""
+        signal textEdited(string value)
         implicitHeight: 34
+
+        function openCalendar(anchorItem) {
+            if (conditionIndex >= 0)
+                window.openRuleDatePicker(conditionIndex, dateProperty, dateInput.text, anchorItem)
+            else
+                window.openSearchDatePicker(dateKey, dateInput.text, anchorItem)
+        }
 
         DarkField {
             id: dateInput
             anchors.fill: parent
             rightPadding: calendarGlyph.width + 12
-            placeholderText: searchDateField.placeholderText
+            placeholderText: calendarDateField.placeholderText
             ToolTip.visible: activeFocus
             ToolTip.text: "Date format: MM-DD-YYYY"
+            onTextEdited: calendarDateField.textEdited(text)
 
             // Keep the field editable while making a click anywhere open its calendar.
             TapHandler {
-                onTapped: window.openSearchDatePicker(searchDateField.dateKey, dateInput.text, calendarGlyph)
+                onTapped: calendarDateField.openCalendar(calendarGlyph)
             }
         }
 
@@ -1132,10 +1152,12 @@ ApplicationWindow {
             anchors.verticalCenter: parent.verticalCenter
             text: "\uE787"
             font.family: "Segoe MDL2 Assets"
+            ToolTip.text: "Choose date"
             contentItem: Text {
                 text: calendarGlyph.text
                 color: window.textMuted
                 font.family: calendarGlyph.font.family
+                font.pixelSize: 14
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
             }
@@ -1144,7 +1166,7 @@ ApplicationWindow {
                 color: calendarGlyph.hovered ? window.panelRaised : "transparent"
                 border.color: "transparent"
             }
-            onClicked: window.openSearchDatePicker(searchDateField.dateKey, dateInput.text, calendarGlyph)
+            onClicked: calendarDateField.openCalendar(calendarGlyph)
         }
     }
 
@@ -1827,6 +1849,7 @@ ApplicationWindow {
                                     AppButton {
                                         anchors.left: homeCardTitle.left
                                         anchors.bottom: parent.bottom
+                                        width: 124
                                         text: modelData.action
                                         implicitHeight: 28
                                         leftPadding: 12
@@ -2252,14 +2275,14 @@ ApplicationWindow {
                                 Layout.fillWidth: true
                                 spacing: 8
                                 Text { text: "Created date"; color: window.textMuted; font.pixelSize: 13; Layout.preferredWidth: 82; verticalAlignment: Text.AlignVCenter }
-                                SearchDateField {
+                                CalendarDateField {
                                     id: createdFrom
                                     Layout.preferredWidth: 142
                                     Layout.preferredHeight: 34
                                     placeholderText: "Created from"
                                     dateKey: "createdFrom"
                                 }
-                                SearchDateField {
+                                CalendarDateField {
                                     id: createdTo
                                     Layout.preferredWidth: 142
                                     Layout.preferredHeight: 34
@@ -2267,14 +2290,14 @@ ApplicationWindow {
                                     dateKey: "createdTo"
                                 }
                                 Text { text: "Modified date"; color: window.textMuted; font.pixelSize: 13; Layout.preferredWidth: 92; verticalAlignment: Text.AlignVCenter }
-                                SearchDateField {
+                                CalendarDateField {
                                     id: modifiedFrom
                                     Layout.preferredWidth: 142
                                     Layout.preferredHeight: 34
                                     placeholderText: "Modified from"
                                     dateKey: "modifiedFrom"
                                 }
-                                SearchDateField {
+                                CalendarDateField {
                                     id: modifiedTo
                                     Layout.preferredWidth: 142
                                     Layout.preferredHeight: 34
@@ -2540,7 +2563,7 @@ ApplicationWindow {
                             anchors.leftMargin: 14
                             anchors.rightMargin: 14
                             spacing: 14
-                            Image { source: "../assets/junkcleaner/drive.png"; sourceSize.width: 40; sourceSize.height: 40; Layout.preferredWidth: 40; Layout.preferredHeight: 40; fillMode: Image.PreserveAspectFit }
+                            Image { source: "../assets/JunkCleaner/drive.png"; sourceSize.width: 40; sourceSize.height: 40; Layout.preferredWidth: 40; Layout.preferredHeight: 40; fillMode: Image.PreserveAspectFit }
                             ColumnLayout {
                                 Layout.preferredWidth: 145
                                 spacing: 2
@@ -2548,7 +2571,7 @@ ApplicationWindow {
                                 Text { text: fileSense.storageVolumeInfo.filesystem || "Storage volume"; color: window.textMuted; font.pixelSize: 13; elide: Text.ElideRight }
                             }
                             Rectangle { Layout.preferredWidth: 1; Layout.preferredHeight: 60; color: window.border }
-                            Image { source: "../assets/junkcleaner/allocated.png"; sourceSize.width: 38; sourceSize.height: 38; Layout.preferredWidth: 38; Layout.preferredHeight: 38; fillMode: Image.PreserveAspectFit }
+                            Image { source: "../assets/JunkCleaner/allocated.png"; sourceSize.width: 38; sourceSize.height: 38; Layout.preferredWidth: 38; Layout.preferredHeight: 38; fillMode: Image.PreserveAspectFit }
                             ColumnLayout {
                                 Layout.preferredWidth: 138
                                 spacing: 2
@@ -2556,7 +2579,7 @@ ApplicationWindow {
                                 Text { text: "Capacity"; color: window.textMuted; font.pixelSize: 13 }
                             }
                             Rectangle { Layout.preferredWidth: 1; Layout.preferredHeight: 60; color: window.border }
-                            Image { source: "../assets/junkcleaner/used.png"; sourceSize.width: 38; sourceSize.height: 38; Layout.preferredWidth: 38; Layout.preferredHeight: 38; fillMode: Image.PreserveAspectFit }
+                            Image { source: "../assets/JunkCleaner/used.png"; sourceSize.width: 38; sourceSize.height: 38; Layout.preferredWidth: 38; Layout.preferredHeight: 38; fillMode: Image.PreserveAspectFit }
                             ColumnLayout {
                                 Layout.preferredWidth: 138
                                 spacing: 2
@@ -2564,7 +2587,7 @@ ApplicationWindow {
                                 Text { text: "Used Space (" + Number(fileSense.storageVolumeInfo.usedPercent || 0).toFixed(1) + "%)"; color: window.textMuted; font.pixelSize: 13 }
                             }
                             Rectangle { Layout.preferredWidth: 1; Layout.preferredHeight: 60; color: window.border }
-                            Image { source: "../assets/junkcleaner/free.png"; sourceSize.width: 38; sourceSize.height: 38; Layout.preferredWidth: 38; Layout.preferredHeight: 38; fillMode: Image.PreserveAspectFit }
+                            Image { source: "../assets/JunkCleaner/free.png"; sourceSize.width: 38; sourceSize.height: 38; Layout.preferredWidth: 38; Layout.preferredHeight: 38; fillMode: Image.PreserveAspectFit }
                             ColumnLayout {
                                 Layout.preferredWidth: 120
                                 spacing: 2
@@ -2572,7 +2595,7 @@ ApplicationWindow {
                                 Text { text: "Free Space (" + (100 - Number(fileSense.storageVolumeInfo.usedPercent || 0)).toFixed(1) + "%)"; color: window.textMuted; font.pixelSize: 13 }
                             }
                             Rectangle { Layout.preferredWidth: 1; Layout.preferredHeight: 60; color: window.border }
-                            Image { source: "../assets/junkcleaner/summary.png"; sourceSize.width: 34; sourceSize.height: 34; Layout.preferredWidth: 34; Layout.preferredHeight: 34; fillMode: Image.PreserveAspectFit }
+                            Image { source: "../assets/JunkCleaner/summary.png"; sourceSize.width: 34; sourceSize.height: 34; Layout.preferredWidth: 34; Layout.preferredHeight: 34; fillMode: Image.PreserveAspectFit }
                             ColumnLayout {
                                 Layout.fillWidth: true
                                 spacing: 2
@@ -4393,69 +4416,35 @@ ApplicationWindow {
                                                         }
                                                     }
                                                     RowLayout {
+                                                        id: startRuleDateRow
+                                                        property int ruleConditionIndex: conditionIndex
                                                         visible: field === "File Date" && ["Before", "After", "Between"].indexOf(operator) >= 0
-                                                        Layout.preferredWidth: 150
-                                                        spacing: 4
-                                                        DarkField {
-                                                            Layout.preferredWidth: 116
+                                                        Layout.preferredWidth: 142
+                                                        Layout.preferredHeight: 30
+                                                        CalendarDateField {
                                                             Layout.fillWidth: true
+                                                            Layout.fillHeight: true
                                                             placeholderText: "MM-DD-YYYY"
                                                             text: startDate
-                                                            onTextEdited: ruleConditions.setProperty(conditionIndex, "startDate", text)
-                                                        }
-                                                        AppButton {
-                                                            id: startDateButton
-                                                            Layout.preferredWidth: 30
-                                                            Layout.preferredHeight: 30
-                                                            padding: 0
-                                                            text: "▦"
-                                                            ToolTip.text: "Choose date"
-                                                            onClicked: window.openRuleDatePicker(conditionIndex, "startDate", startDate, startDateButton)
-                                                            contentItem: Text {
-                                                                text: parent.text
-                                                                color: window.textMain
-                                                                font.pixelSize: 17
-                                                                horizontalAlignment: Text.AlignHCenter
-                                                                verticalAlignment: Text.AlignVCenter
-                                                            }
-                                                            background: Rectangle {
-                                                                radius: window.buttonRadius
-                                                                color: window.panel
-                                                                border.color: window.border
-                                                            }
+                                                            conditionIndex: startRuleDateRow.ruleConditionIndex
+                                                            dateProperty: "startDate"
+                                                            onTextEdited: ruleConditions.setProperty(startRuleDateRow.ruleConditionIndex, "startDate", value)
                                                         }
                                                     }
                                                     RowLayout {
+                                                        id: endRuleDateRow
+                                                        property int ruleConditionIndex: conditionIndex
                                                         visible: field === "File Date" && operator === "Between"
-                                                        Layout.preferredWidth: 150
-                                                        spacing: 4
-                                                        DarkField {
-                                                            Layout.preferredWidth: 116
+                                                        Layout.preferredWidth: 142
+                                                        Layout.preferredHeight: 30
+                                                        CalendarDateField {
                                                             Layout.fillWidth: true
+                                                            Layout.fillHeight: true
                                                             placeholderText: "MM-DD-YYYY"
                                                             text: endDate
-                                                            onTextEdited: ruleConditions.setProperty(conditionIndex, "endDate", text)
-                                                        }
-                                                        AppButton {
-                                                            id: endDateButton
-                                                            Layout.preferredWidth: 30
-                                                            Layout.preferredHeight: 30
-                                                            padding: 0
-                                                            text: "▦"
-                                                            ToolTip.text: "Choose date"
-                                                            onClicked: window.openRuleDatePicker(conditionIndex, "endDate", endDate, endDateButton)
-                                                            contentItem: Text {
-                                                                text: parent.text
-                                                                color: window.textMain
-                                                                font.pixelSize: 17
-                                                                horizontalAlignment: Text.AlignHCenter
-                                                                verticalAlignment: Text.AlignVCenter
-                                                            }
-                                                            background: Rectangle {
-                                                                radius: window.buttonRadius
-                                                                color: window.panel
-                                                                border.color: window.border
-                                                            }
+                                                            conditionIndex: endRuleDateRow.ruleConditionIndex
+                                                            dateProperty: "endDate"
+                                                            onTextEdited: ruleConditions.setProperty(endRuleDateRow.ruleConditionIndex, "endDate", value)
                                                         }
                                                     }
                                                     DarkField {
@@ -4802,7 +4791,7 @@ ApplicationWindow {
                                             anchors.fill: parent
                                             hoverEnabled: true
                                             cursorShape: Qt.PointingHandCursor
-                                            onClicked: duplicateMode = "Find duplicates"
+                                            onClicked: window.selectDuplicateMode("Find duplicates")
                                         }
                                     }
                                     Item {
@@ -4840,7 +4829,7 @@ ApplicationWindow {
                                             anchors.fill: parent
                                             hoverEnabled: true
                                             cursorShape: Qt.PointingHandCursor
-                                            onClicked: duplicateMode = "Build a rule"
+                                            onClicked: window.selectDuplicateMode("Build a rule")
                                         }
                                     }
                                 }
@@ -4991,102 +4980,173 @@ ApplicationWindow {
                                     verticalAlignment: Text.AlignVCenter
                                 }
                             }
-                            ColumnLayout {
+                            Rectangle {
                                 visible: duplicateMode === "Build a rule"
                                 Layout.fillWidth: true
-                                spacing: 5
-                                Repeater {
-                                    model: duplicateConditions
-                                    delegate: RowLayout {
-                                        required property int index
-                                        required property string logic
-                                        required property string field
-                                        required property string operator
-                                        required property string typeValue
-                                        required property string value
-                                        Layout.fillWidth: true
-                                        OrganizerComboBox {
-                                            id: duplicateLogic
-                                            visible: index > 0
-                                            Layout.preferredWidth: 82
-                                            Layout.preferredHeight: 30
-                                            model: ["AND", "OR", "NOT"]
-                                            currentIndex: Math.max(0, model.indexOf(logic))
-                                            onActivated: function (choiceIndex) { window.setDuplicateCondition(index, "logic", duplicateLogic.currentText); }
-                                        }
-                                        OrganizerComboBox {
-                                            id: duplicateField
-                                            Layout.preferredWidth: 150
-                                            Layout.preferredHeight: 30
-                                            model: ["File Type", "File Extension"]
-                                            currentIndex: Math.max(0, model.indexOf(field))
-                                            onActivated: function (choiceIndex) {
-                                                window.setDuplicateCondition(index, "field", duplicateField.currentText);
-                                                window.setDuplicateCondition(index, "operator", "Is");
+                                Layout.preferredHeight: Math.min(230, duplicateConditionColumn.implicitHeight + 20)
+                                Layout.minimumHeight: 102
+                                radius: 10
+                                color: window.panelRaised
+                                border.color: window.border
+                                Flickable {
+                                    anchors.fill: parent
+                                    anchors.margins: 10
+                                    contentWidth: width
+                                    contentHeight: duplicateConditionColumn.implicitHeight
+                                    clip: true
+                                    ColumnLayout {
+                                        id: duplicateConditionColumn
+                                        width: parent.width
+                                        spacing: 6
+                                        Repeater {
+                                            model: duplicateConditions
+                                            delegate: RowLayout {
+                                                required property int index
+                                                required property string logic
+                                                required property string field
+                                                required property string operator
+                                                required property string typeValue
+                                                required property string value
+                                                Layout.fillWidth: true
+                                                spacing: 6
+                                                Text {
+                                                    visible: index === 0
+                                                    text: "IF"
+                                                    color: window.textMain
+                                                    Layout.preferredWidth: 76
+                                                    horizontalAlignment: Text.AlignHCenter
+                                                    verticalAlignment: Text.AlignVCenter
+                                                }
+                                                OrganizerComboBox {
+                                                    id: duplicateLogic
+                                                    visible: index > 0
+                                                    Layout.preferredWidth: 76
+                                                    Layout.preferredHeight: 30
+                                                    model: ["AND", "OR", "NOT"]
+                                                    currentIndex: Math.max(0, model.indexOf(logic))
+                                                    onActivated: function (choiceIndex) { window.setDuplicateCondition(index, "logic", duplicateLogic.currentText); }
+                                                    contentItem: Text {
+                                                        leftPadding: 8
+                                                        text: duplicateLogic.displayText
+                                                        color: window.textMain
+                                                        verticalAlignment: Text.AlignVCenter
+                                                    }
+                                                    background: Rectangle {
+                                                        radius: window.buttonRadius
+                                                        color: window.panel
+                                                        border.color: window.border
+                                                    }
+                                                }
+                                                OrganizerComboBox {
+                                                    id: duplicateField
+                                                    Layout.preferredWidth: 150
+                                                    Layout.preferredHeight: 30
+                                                    model: ["File Type", "File Extension"]
+                                                    currentIndex: Math.max(0, model.indexOf(field))
+                                                    onActivated: function (choiceIndex) {
+                                                        window.setDuplicateCondition(index, "field", duplicateField.currentText);
+                                                        window.setDuplicateCondition(index, "operator", "Is");
+                                                    }
+                                                    contentItem: Text {
+                                                        leftPadding: 8
+                                                        text: duplicateField.displayText
+                                                        color: window.textMain
+                                                        verticalAlignment: Text.AlignVCenter
+                                                        elide: Text.ElideRight
+                                                    }
+                                                    background: Rectangle {
+                                                        radius: window.buttonRadius
+                                                        color: window.panel
+                                                        border.color: window.border
+                                                    }
+                                                }
+                                                OrganizerComboBox {
+                                                    id: duplicateOperator
+                                                    Layout.preferredWidth: 154
+                                                    Layout.preferredHeight: 30
+                                                    model: ["Is", "Is not", "Contains", "Does not contain"]
+                                                    currentIndex: Math.max(0, model.indexOf(operator))
+                                                    onActivated: function (choiceIndex) { window.setDuplicateCondition(index, "operator", duplicateOperator.currentText); }
+                                                    contentItem: Text {
+                                                        leftPadding: 8
+                                                        text: duplicateOperator.displayText
+                                                        color: window.textMain
+                                                        verticalAlignment: Text.AlignVCenter
+                                                        elide: Text.ElideRight
+                                                    }
+                                                    background: Rectangle {
+                                                        radius: window.buttonRadius
+                                                        color: window.panel
+                                                        border.color: window.border
+                                                    }
+                                                }
+                                                OrganizerComboBox {
+                                                    id: duplicateTypeValue
+                                                    visible: field === "File Type"
+                                                    Layout.fillWidth: true
+                                                    Layout.preferredHeight: 30
+                                                    model: ["Compressed", "Video", "Audio", "Images", "Documents", "Programs", "Other"]
+                                                    currentIndex: Math.max(0, model.indexOf(typeValue))
+                                                    onActivated: function (choiceIndex) { window.setDuplicateCondition(index, "typeValue", duplicateTypeValue.currentText); }
+                                                    contentItem: Text {
+                                                        leftPadding: 9
+                                                        text: duplicateTypeValue.displayText || "Select file type"
+                                                        color: window.textMain
+                                                        verticalAlignment: Text.AlignVCenter
+                                                    }
+                                                    background: Rectangle {
+                                                        radius: window.buttonRadius
+                                                        color: window.panel
+                                                        border.color: window.border
+                                                    }
+                                                }
+                                                DarkField {
+                                                    visible: duplicateField.currentText === "File Extension"
+                                                    Layout.fillWidth: true
+                                                    placeholderText: "e.g. .pdf"
+                                                    text: value
+                                                    onTextEdited: window.setDuplicateCondition(index, "value", text)
+                                                }
+                                                AppButton {
+                                                    visible: duplicateConditions.count > 1
+                                                    Layout.preferredWidth: 30
+                                                    Layout.preferredHeight: 30
+                                                    text: "×"
+                                                    onClicked: if (duplicateConditions.count > 1) duplicateConditions.remove(index)
+                                                    contentItem: Text {
+                                                        text: parent.text
+                                                        color: window.textMain
+                                                        font.pixelSize: 20
+                                                        horizontalAlignment: Text.AlignHCenter
+                                                        verticalAlignment: Text.AlignVCenter
+                                                    }
+                                                    background: Rectangle {
+                                                        radius: window.buttonRadius
+                                                        color: window.panel
+                                                        border.color: window.border
+                                                    }
+                                                }
                                             }
                                         }
-                                        OrganizerComboBox {
-                                            id: duplicateOperator
-                                            Layout.preferredWidth: 170
-                                            Layout.preferredHeight: 30
-                                            model: ["Is", "Is not", "Contains", "Does not contain"]
-                                            currentIndex: Math.max(0, model.indexOf(operator))
-                                            onActivated: function (choiceIndex) { window.setDuplicateCondition(index, "operator", duplicateOperator.currentText); }
-                                        }
-                                        OrganizerComboBox {
-                                            id: duplicateTypeValue
-                                            visible: field === "File Type"
-                                            Layout.fillWidth: true
-                                            Layout.preferredHeight: 30
-                                            model: ["Compressed", "Video", "Audio", "Images", "Documents", "Programs", "Other"]
-                                            currentIndex: Math.max(0, model.indexOf(typeValue))
-                                            onActivated: function (choiceIndex) { window.setDuplicateCondition(index, "typeValue", duplicateTypeValue.currentText); }
-                                        }
-                                        DarkField {
-                                            visible: duplicateField.currentText === "File Extension"
-                                            Layout.fillWidth: true
-                                            placeholderText: "e.g. .pdf"
-                                            text: value
-                                            onTextEdited: window.setDuplicateCondition(index, "value", text)
-                                        }
                                         AppButton {
-                                            text: "×"
-                                            implicitWidth: 30
+                                            text: "+  Add condition"
                                             implicitHeight: 30
+                                            leftPadding: 12
+                                            rightPadding: 12
                                             contentItem: Text {
-                                                text: "×"
-                                                color: window.textMuted
-                                                font.pixelSize: 18
-                                                horizontalAlignment: Text.AlignHCenter
+                                                text: parent.text
+                                                color: window.textMain
                                                 verticalAlignment: Text.AlignVCenter
+                                                horizontalAlignment: Text.AlignHCenter
                                             }
                                             background: Rectangle {
                                                 radius: window.buttonRadius
-                                                color: parent.hovered ? window.panelRaised : window.panel
+                                                color: window.panel
                                                 border.color: window.border
                                             }
-                                            onClicked: if (duplicateConditions.count > 1) duplicateConditions.remove(index)
+                                            onClicked: duplicateConditions.append({logic: "AND", field: "File Type", operator: "Is", typeValue: "Images", value: ""})
                                         }
                                     }
-                                }
-                                AppButton {
-                                    text: "+ Add condition"
-                                    implicitHeight: 30
-                                    leftPadding: 12
-                                    rightPadding: 12
-                                    contentItem: Text {
-                                        text: parent.text
-                                        color: window.textMain
-                                        font.pixelSize: 13
-                                        horizontalAlignment: Text.AlignHCenter
-                                        verticalAlignment: Text.AlignVCenter
-                                    }
-                                    background: Rectangle {
-                                        radius: window.buttonRadius
-                                        color: parent.hovered ? window.panelRaised : window.panel
-                                        border.color: window.border
-                                    }
-                                    onClicked: duplicateConditions.append({logic: "AND", field: "File Type", operator: "Is", typeValue: "Images", value: ""})
                                 }
                             }
                             RowLayout {
@@ -5105,7 +5165,8 @@ ApplicationWindow {
                                         item.clicked.connect(function () {
                                             fileSense.quickScanAt(duplicateRoot.text, "duplicates", duplicateIncludeSubfolders.checked,
                                                                   duplicateMode === "Build a rule" ? collectDuplicateConditions() : [],
-                                                                  duplicateExcludedFolderPaths());
+                                                                  duplicateExcludedFolderPaths(),
+                                                                  duplicateMode === "Build a rule" ? "rule" : "find");
                                         });
                                     }
                                 }
@@ -5513,7 +5574,7 @@ ApplicationWindow {
                                     running: visible
                                 }
                                 Text {
-                                    text: fileSense.status
+                                    text: window.activePage === "Duplicate Finder" ? fileSense.duplicateStatus : fileSense.status
                                     color: window.textMuted
                                     font.pixelSize: 12
                                     elide: Text.ElideRight
@@ -5715,7 +5776,7 @@ ApplicationWindow {
                                             visible: window.activePage === "Duplicate Finder" && modelData.duplicateGroup !== undefined && modelData.duplicateGroup !== ""
                                             checked: modelData.deleteSelected === true
                                             z: 3
-                                            onToggled: fileSense.setDuplicateDeleteSelected(modelData.path, checked)
+                                            onToggled: fileSense.setDuplicateDeleteSelected(modelData.path, checked, duplicateMode === "Build a rule" ? "rule" : "find")
                                             indicator: Rectangle {
                                                 implicitWidth: 17
                                                 implicitHeight: 17
@@ -6010,12 +6071,12 @@ ApplicationWindow {
                                             anchors.leftMargin: 10
                                             anchors.rightMargin: 10
                                             spacing: 8
-                                            SortHeader { text: "Name / Group"; color: window.textMuted; sortScope: "duplicates"; sortKey: "name"; Layout.preferredWidth: resultsViewport.duplicateNameColumnWidth; onSortRequested: window.sortedHeader(sortScope, sortKey, sortKind) }
+                                            SortHeader { text: "Name / Group"; color: window.textMuted; sortScope: window.duplicateMode === "Build a rule" ? "duplicateRule" : "duplicateFind"; sortKey: "name"; Layout.preferredWidth: resultsViewport.duplicateNameColumnWidth; onSortRequested: window.sortedHeader(sortScope, sortKey, sortKind) }
                                             Text { text: "Delete"; color: window.textMuted; font.pixelSize: 11; horizontalAlignment: Text.AlignHCenter; Layout.preferredWidth: 62 }
-                                            SortHeader { text: "Type"; color: window.textMuted; sortScope: "duplicates"; sortKey: "fileType"; Layout.preferredWidth: 72; onSortRequested: window.sortedHeader(sortScope, sortKey, sortKind) }
-                                            SortHeader { text: "Size"; color: window.textMuted; sortScope: "duplicates"; sortKey: "size"; sortKind: "size"; Layout.preferredWidth: 116; onSortRequested: window.sortedHeader(sortScope, sortKey, sortKind) }
-                                            SortHeader { text: "Size comparison"; color: window.textMuted; sortScope: "duplicates"; sortKey: "sizeComparison"; Layout.preferredWidth: 132; onSortRequested: window.sortedHeader(sortScope, sortKey, sortKind) }
-                                            SortHeader { text: "Location"; color: window.textMuted; sortScope: "duplicates"; sortKey: "path"; Layout.fillWidth: true; onSortRequested: window.sortedHeader(sortScope, sortKey, sortKind) }
+                                            SortHeader { text: "Type"; color: window.textMuted; sortScope: window.duplicateMode === "Build a rule" ? "duplicateRule" : "duplicateFind"; sortKey: "fileType"; Layout.preferredWidth: 72; onSortRequested: window.sortedHeader(sortScope, sortKey, sortKind) }
+                                            SortHeader { text: "Size"; color: window.textMuted; sortScope: window.duplicateMode === "Build a rule" ? "duplicateRule" : "duplicateFind"; sortKey: "size"; sortKind: "size"; Layout.preferredWidth: 116; onSortRequested: window.sortedHeader(sortScope, sortKey, sortKind) }
+                                            SortHeader { text: "Size comparison"; color: window.textMuted; sortScope: window.duplicateMode === "Build a rule" ? "duplicateRule" : "duplicateFind"; sortKey: "sizeComparison"; Layout.preferredWidth: 132; onSortRequested: window.sortedHeader(sortScope, sortKey, sortKind) }
+                                            SortHeader { text: "Location"; color: window.textMuted; sortScope: window.duplicateMode === "Build a rule" ? "duplicateRule" : "duplicateFind"; sortKey: "path"; Layout.fillWidth: true; onSortRequested: window.sortedHeader(sortScope, sortKey, sortKind) }
                                         }
                                     }
                                     ListView {
@@ -6095,7 +6156,7 @@ ApplicationWindow {
                                                         height: 18
                                                         padding: 0
                                                         checked: deleteSelected
-                                                        onToggled: fileSense.setDuplicateDeleteSelected(path, checked)
+                                                        onToggled: fileSense.setDuplicateDeleteSelected(path, checked, duplicateMode === "Build a rule" ? "rule" : "find")
                                                         indicator: Rectangle {
                                                             implicitWidth: 16
                                                             implicitHeight: 16
@@ -6135,8 +6196,9 @@ ApplicationWindow {
                                 Text {
                                     visible: (window.activePage === "File Search & Finder" && fileSense.searchRunning)
                                              || (window.activePage === "Startup Manager" && fileSense.startupBusy)
+                                             || (window.activePage === "Duplicate Finder" && fileSense.duplicateBusy)
                                     anchors.centerIn: parent
-                                    text: fileSense.status
+                                    text: window.activePage === "Duplicate Finder" ? fileSense.duplicateStatus : fileSense.status
                                     color: window.textMuted
                                     font.pixelSize: 12
                                     horizontalAlignment: Text.AlignHCenter
@@ -6144,18 +6206,18 @@ ApplicationWindow {
                                 }
                                 EmptyResultsState {
                                     visible: (window.activePage === "File Search & Finder" && fileSense.rows.length === 0 && !fileSense.searchRunning)
-                                             || (window.activePage === "Duplicate Finder" && fileSense.rows.length === 0)
+                                             || (window.activePage === "Duplicate Finder" && fileSense.duplicateRows.length === 0 && !fileSense.duplicateBusy)
                                              || (window.activePage === "Startup Manager" && window.filterStartupRows(fileSense.rows).length === 0 && !fileSense.startupBusy)
                                     anchors.centerIn: parent
                                     title: window.activePage === "File Search & Finder"
                                            ? (fileSense.status.indexOf("Found 0") === 0 ? "No files matched" : "No results yet")
                                            : window.activePage === "Duplicate Finder"
-                                             ? (fileSense.status.indexOf("Found 0") === 0 ? "No duplicates found" : "No results yet")
+                                             ? (fileSense.duplicateStatus.indexOf("Found 0") === 0 ? "No duplicates found" : "No results yet")
                                              : (window.startupSearchText.trim().length > 0 ? "No startup entries match" : "No startup entries yet")
                                     description: window.activePage === "File Search & Finder"
                                                  ? (fileSense.status.indexOf("Found 0") === 0 ? "Try changing the search filters or selected folders." : "Enter search criteria and click Search to find files.")
                                                  : window.activePage === "Duplicate Finder"
-                                                   ? "Choose folders and scan to find duplicate files."
+                                                   ? (duplicateMode === "Build a rule" ? "Choose folders, add conditions, and scan to find matching duplicate files." : "Choose folders and scan to find duplicate files.")
                                                    : (window.startupSearchText.trim().length > 0 ? "Try another search term." : "Click Scan autoruns to inspect startup entries.")
                                 }
                             }
@@ -6301,6 +6363,14 @@ ApplicationWindow {
         property string targetField: ""
         property date displayedMonth: new Date()
         property date selectedDate: new Date()
+        property var monthOptions: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+        property var yearOptions: {
+            var years = [];
+            var centerYear = displayedMonth.getFullYear();
+            for (var year = centerYear - 100; year <= centerYear + 100; ++year)
+                years.push(String(year));
+            return years;
+        }
         x: Math.max(8, (window.width - width) / 2)
         y: Math.max(8, (window.height - height) / 2)
         width: 276
@@ -6321,20 +6391,61 @@ ApplicationWindow {
             spacing: 8
             RowLayout {
                 Layout.fillWidth: true
+                spacing: 4
                 AppButton {
                     text: "‹"
                     Layout.preferredWidth: 30
                     Layout.preferredHeight: 30
                     onClicked: ruleDatePicker.displayedMonth = new Date(ruleDatePicker.displayedMonth.getFullYear(), ruleDatePicker.displayedMonth.getMonth() - 1, 1)
                 }
-                Text {
+                OrganizerComboBox {
                     Layout.fillWidth: true
-                    text: Qt.formatDate(ruleDatePicker.displayedMonth, "MMMM yyyy")
-                    color: window.textMain
-                    font.pixelSize: 14
-                    font.bold: true
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
+                    Layout.preferredHeight: 30
+                    model: ruleDatePicker.monthOptions
+                    currentIndex: ruleDatePicker.displayedMonth.getMonth()
+                    onActivated: function (monthIndex) {
+                        ruleDatePicker.displayedMonth = new Date(ruleDatePicker.displayedMonth.getFullYear(), monthIndex, 1);
+                    }
+                    contentItem: Text {
+                        leftPadding: 8
+                        rightPadding: 22
+                        text: parent.displayText
+                        color: window.textMain
+                        font.pixelSize: 12
+                        font.bold: true
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        elide: Text.ElideRight
+                    }
+                    background: Rectangle {
+                        radius: window.buttonRadius
+                        color: window.panelRaised
+                        border.color: window.border
+                    }
+                }
+                OrganizerComboBox {
+                    Layout.preferredWidth: 76
+                    Layout.preferredHeight: 30
+                    model: ruleDatePicker.yearOptions
+                    currentIndex: model.indexOf(String(ruleDatePicker.displayedMonth.getFullYear()))
+                    onActivated: function (yearIndex) {
+                        ruleDatePicker.displayedMonth = new Date(Number(ruleDatePicker.yearOptions[yearIndex]), ruleDatePicker.displayedMonth.getMonth(), 1);
+                    }
+                    contentItem: Text {
+                        leftPadding: 7
+                        rightPadding: 22
+                        text: parent.displayText
+                        color: window.textMain
+                        font.pixelSize: 12
+                        font.bold: true
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                    background: Rectangle {
+                        radius: window.buttonRadius
+                        color: window.panelRaised
+                        border.color: window.border
+                    }
                 }
                 AppButton {
                     text: "›"
@@ -6712,7 +6823,7 @@ ApplicationWindow {
             message: fileSense.duplicateConfirmationText
             iconType: "warning"
         }
-        onAccepted: fileSense.resolveDuplicates()
+        onAccepted: fileSense.resolveDuplicates(duplicateMode === "Build a rule" ? "rule" : "find")
     }
     Connections {
         target: fileSense

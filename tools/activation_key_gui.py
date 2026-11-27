@@ -5,6 +5,9 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(PROJECT_ROOT / "src"))
+
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QFont, QIcon
 from PySide6.QtWidgets import (
@@ -21,7 +24,7 @@ class ActivationKeyGenerator(QWidget):
         self.setWindowTitle("FileSense Activation Key Generator")
         self.setMinimumSize(580, 430)
         self.resize(680, 480)
-        icon_path = Path(__file__).resolve().parent / "assets" / "FSICO.png"
+        icon_path = PROJECT_ROOT / "assets" / "FSICO.png"
         if icon_path.exists():
             self.setWindowIcon(QIcon(str(icon_path)))
 
@@ -40,7 +43,7 @@ class ActivationKeyGenerator(QWidget):
 
         layout.addWidget(QLabel("Private signing key", self))
         key_row = QHBoxLayout()
-        default_key = Path(__file__).resolve().parent / "developer_keys" / "FileSense_activation_private.pem"
+        default_key = PROJECT_ROOT / "developer_keys" / "FileSense_activation_private.pem"
         self.private_key = QLineEdit(str(default_key), self)
         key_row.addWidget(self.private_key, 1)
         browse = QPushButton("Browse…", self)

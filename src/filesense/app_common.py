@@ -101,7 +101,8 @@ CONFLICT_POLICIES = ("Skip", "Keep both", "Replace")
 
 
 def resource_path(relative_path: str) -> Path:
-    bundle_root = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parent))
+    source_root = Path(__file__).resolve().parents[2]
+    bundle_root = Path(getattr(sys, "_MEIPASS", source_root))
     return bundle_root / relative_path
 
 

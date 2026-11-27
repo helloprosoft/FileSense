@@ -1,6 +1,6 @@
 """Home screen and overview cards."""
 
-from app_common import *
+from .app_common import *
 from PySide6.QtCore import QRectF, QSize, QUrl
 from PySide6.QtGui import QBrush, QDesktopServices, QFont, QLinearGradient, QPainter, QPen
 from PySide6.QtWidgets import QToolButton

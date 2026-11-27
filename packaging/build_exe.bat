@@ -1,6 +1,6 @@
 @echo off
 setlocal
-cd /d "%~dp0"
+cd /d "%~dp0\.."
 
 where py >nul 2>nul
 if errorlevel 1 (
@@ -20,13 +20,13 @@ if not exist ".venv-build\Scripts\python.exe" (
 )
 
 set "BUILD_PY=.venv-build\Scripts\python.exe"
-"%BUILD_PY%" -m pip install --disable-pip-version-check -r requirements.txt -r requirements-build.txt
+"%BUILD_PY%" -m pip install --disable-pip-version-check -r requirements.txt -r packaging\requirements-build.txt
 if errorlevel 1 exit /b 1
 
 where upx >nul 2>nul
 if errorlevel 1 echo UPX not found; the build will use PyInstaller's standard compression.
 
-"%BUILD_PY%" -m PyInstaller --noconfirm --clean FileSense.spec
+"%BUILD_PY%" -m PyInstaller --noconfirm --clean packaging\FileSense.spec
 if errorlevel 1 exit /b 1
 
 echo.

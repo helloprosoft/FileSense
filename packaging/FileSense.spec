@@ -5,7 +5,7 @@ from pathlib import Path
 import os
 import sys
 
-ROOT = Path(SPECPATH)
+ROOT = Path(SPECPATH).parent
 PYTHON = Path(sys.executable)
 SITE_PACKAGES = PYTHON.parent.parent / "Lib" / "site-packages"
 PYSIDE_QML = SITE_PACKAGES / "PySide6" / "qml"
@@ -80,8 +80,8 @@ excluded_modules = [
 ]
 
 a = Analysis(
-    [str(ROOT / "FileSense.py")], pathex=[str(ROOT)], binaries=binaries, datas=datas,
-    hiddenimports=hiddenimports, hookspath=[str(ROOT / "pyinstaller_hooks")], hooksconfig={}, runtime_hooks=[],
+    [str(ROOT / "FileSense.py")], pathex=[str(ROOT), str(ROOT / "src")], binaries=binaries, datas=datas,
+    hiddenimports=hiddenimports, hookspath=[str(ROOT / "packaging" / "pyinstaller_hooks")], hooksconfig={}, runtime_hooks=[],
     excludes=excluded_modules, noarchive=False, optimize=1,
 )
 pyz = PYZ(a.pure)
@@ -89,7 +89,7 @@ exe = EXE(
     pyz, a.scripts, [], exclude_binaries=True, name="FileSense", debug=False,
     bootloader_ignore_signals=False, strip=False, upx=True, console=False,
     disable_windowed_traceback=False, argv_emulation=False, target_arch=None,
-    codesign_identity=None, entitlements_file=None, version=str(ROOT / "version_info.txt"),
+    codesign_identity=None, entitlements_file=None, version=str(ROOT / "packaging" / "version_info.txt"),
     icon=[str(ROOT / "assets" / "FSICO.ico")],
 )
 coll = COLLECT(exe, a.binaries, a.datas, strip=False, upx=True, upx_exclude=[], name="FileSense")

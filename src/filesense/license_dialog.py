@@ -8,8 +8,8 @@ from PySide6.QtWidgets import (
     QPushButton, QVBoxLayout,
 )
 
-from app_common import ACCENT_COLOR
-from license_manager import activate, machine_fingerprint
+from .app_common import ACCENT_COLOR
+from .license_manager import activate, machine_fingerprint
 
 
 class ActivationDialog(QDialog):
@@ -115,7 +115,7 @@ class ActivationDialog(QDialog):
 
 
 def ensure_license(settings) -> bool:
-    from license_manager import license_status
+    from .license_manager import license_status
 
     if license_status(settings)["state"] != "expired":
         return True

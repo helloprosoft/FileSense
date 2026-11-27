@@ -47,7 +47,7 @@ py -m pip install -r requirements.txt
 py .\FileSense.py
 ```
 
-To build a distributable package, run `build_exe.bat` on a Windows build machine with Python 3.10 or newer. This is a build-time requirement only; the resulting installer and portable package include their runtime. See the [Developer Guide](developer-guide.md) for developer and release details.
+To build a distributable package, run `packaging\build_exe.bat` on a Windows build machine with Python 3.10 or newer. This is a build-time requirement only; the resulting installer and portable package include their runtime. See the [Developer Guide](developer-guide.md) for developer and release details.
 
 ## Troubleshooting
 

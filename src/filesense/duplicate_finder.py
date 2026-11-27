@@ -1,6 +1,6 @@
 """Duplicate file discovery and cleanup page."""
 
-from app_common import *
+from .app_common import *
 
 
 class DuplicateFinderInterface(QWidget):

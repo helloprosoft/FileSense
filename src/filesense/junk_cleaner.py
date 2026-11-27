@@ -35,7 +35,7 @@ else:
         PushButton, StrongBodyLabel, SubtitleLabel, TitleLabel,
     )
 
-from app_common import format_bytes, send_to_recycle_bin
+from .app_common import format_bytes, send_to_recycle_bin
 
 
 MAX_ITEMS_PER_CATEGORY = 5000

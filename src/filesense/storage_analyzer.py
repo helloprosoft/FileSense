@@ -1,6 +1,6 @@
 """Storage Analyzer page."""
 
-from app_common import *
+from .app_common import *
 
 
 class StorageAnalyzerInterface(QWidget):

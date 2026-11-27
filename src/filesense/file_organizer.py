@@ -1,6 +1,6 @@
 """Quick Organize and custom rule pages."""
 
-from app_common import *
+from .app_common import *
 
 
 class FileOrganizerInterface(QWidget):

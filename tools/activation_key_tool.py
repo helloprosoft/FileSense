@@ -6,10 +6,14 @@ import argparse
 import base64
 import json
 import re
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-from license_manager import PRODUCT_ID, _emsa_pkcs1_v1_5, validate_activation_key
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(PROJECT_ROOT / "src"))
+
+from filesense.license_manager import PRODUCT_ID, _emsa_pkcs1_v1_5, validate_activation_key
 
 
 def encode(data: bytes) -> str:
@@ -91,7 +95,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Create an offline FileSense activation key.")
     parser.add_argument("--machine-code", required=True, help="Device code shown by FileSense")
     parser.add_argument(
-        "--private-key", default="developer_keys/FileSense_activation_private.pem",
+        "--private-key", default=str(PROJECT_ROOT / "developer_keys" / "FileSense_activation_private.pem"),
         help="Path to the private signing key (never distribute this file)",
     )
     args = parser.parse_args()

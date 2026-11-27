@@ -16,7 +16,7 @@ else:
     from PySide6.QtWidgets import QDialog, QHeaderView, QTextBrowser, QVBoxLayout
     from qfluentwidgets import PushButton, SubtitleLabel
 
-from app_common import make_table, resource_path, set_item
+from .app_common import make_table, resource_path, set_item
 
 
 def log_activity(window, action: str, details: str) -> None:

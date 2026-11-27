@@ -17,17 +17,17 @@ from PySide6.QtCore import (QObject, Property, QSettings, QStorageInfo, Signal, 
 from PySide6.QtGui import QDesktopServices, QGuiApplication
 from PySide6.QtWidgets import QFileIconProvider
 
-from activity_log import log_activity
-from app_common import (
+from .activity_log import log_activity
+from .app_common import (
     CATEGORIES, CONFLICT_POLICIES, DUPLICATES_FOLDER, SIZE_UNITS,
     StorageFile, StorageScanWorker, file_type, format_bytes, move_with_replace,
     resource_path, send_to_recycle_bin, unique_conflict_path,
     allocated_file_size, fast_windows_entries, is_ntfs_path, volume_allocation_unit,
 )
-from file_search import FileSearchWorker, SearchCriteria, _is_reparse, _is_within, _norm_path
-from junk_cleaner import JunkCleanWorker, JunkScanWorker
-from startup_manager import AutorunScanWorker, TAB_CATEGORIES, StartupConfirmationRequired, _set_enabled
-from license_manager import activate as activate_license, license_status, machine_fingerprint
+from .file_search import FileSearchWorker, SearchCriteria, _collapse_roots, _is_reparse, _is_within, _norm_path
+from .junk_cleaner import JunkCleanWorker, JunkScanWorker
+from .startup_manager import AutorunScanWorker, TAB_CATEGORIES, StartupConfirmationRequired, _set_enabled
+from .license_manager import activate as activate_license, license_status, machine_fingerprint
 
 
 _startup_icon_provider = None
@@ -117,12 +117,13 @@ def _compact_activity_detail(action: str, details: str) -> str:
 
 
 class QuickDiscoveryWorker(QThread):
-    completed = Signal(object, str)
+    completed = Signal(object, str, str)
 
-    def __init__(self, kind: str, root: Path, conditions=None):
+    def __init__(self, kind: str, root: Path, conditions=None, result_scope="find"):
         super().__init__()
         self.kind, self.root = kind, root
         self.conditions = conditions or []
+        self.result_scope = result_scope
         self.groups = {}
         self.excluded_paths = []
 
@@ -134,7 +135,7 @@ class QuickDiscoveryWorker(QThread):
         cutoff = time.time() - 30 * 86400
         try:
             roots = tuple(x.strip() for x in str(self.root).split(";") if x.strip())
-            roots = __import__("file_search")._collapse_roots(roots)
+            roots = _collapse_roots(roots)
             excluded = {os.path.normcase(os.path.abspath(path)) for path in self.excluded_paths}
 
             def is_excluded(path):
@@ -218,9 +219,9 @@ class QuickDiscoveryWorker(QThread):
                 rows.sort(key=lambda item: (item[2], str(item[1]).casefold()))
             else:
                 rows.sort(key=lambda item: item[0], reverse=True)
-            self.completed.emit(rows, "; ".join(errors[:5]) if errors else "")
+            self.completed.emit(rows, "; ".join(errors[:5]) if errors else "", self.result_scope)
         except Exception as error:
-            self.completed.emit([], str(error))
+            self.completed.emit([], str(error), self.result_scope)
 
 
 class StorageDirectoryFilesWorker(QThread):
@@ -323,6 +324,11 @@ class FileSenseBackend(QObject):
         self._pending_storage_delete: list[str] = []
         self._duplicate_groups: dict[str, list[str]] = {}
         self._duplicate_delete_selected: dict[str, bool] = {}
+        self._duplicate_results = {
+            "find": {"rows": [], "groups": {}, "selected": {}, "status": "Ready", "busy": False},
+            "rule": {"rows": [], "groups": {}, "selected": {}, "status": "Ready", "busy": False},
+        }
+        self._duplicate_active_scope = "find"
         self._category_plan: list[dict] = []
         self._rule_plan: list[dict] = []
         self._rule_config: dict = {}
@@ -335,6 +341,12 @@ class FileSenseBackend(QObject):
     def startupActionNotice(self): return self._startup_action_notice
     @Property('QVariantList', notify=changed)
     def rows(self): return self._rows
+    @Property('QVariantList', notify=changed)
+    def duplicateRows(self): return self._duplicate_results[self._duplicate_active_scope]["rows"]
+    @Property(str, notify=changed)
+    def duplicateStatus(self): return self._duplicate_results[self._duplicate_active_scope]["status"]
+    @Property(bool, notify=changed)
+    def duplicateBusy(self): return self._duplicate_results[self._duplicate_active_scope]["busy"]
     @Property('QVariantList', notify=changed)
     def quickOrganizeRows(self): return [dict(row) for row in self._category_plan]
     @Property('QVariantList', notify=changed)
@@ -457,8 +469,9 @@ class FileSenseBackend(QObject):
     def selectedStartup(self): return self._selected_startup
     @Property(str, notify=changed)
     def duplicateConfirmationText(self):
-        selected = sum(1 for paths in self._duplicate_groups.values() for path in paths
-                       if self._duplicate_delete_selected.get(path, False))
+        state = self._duplicate_results[self._duplicate_active_scope]
+        selected = sum(1 for paths in state["groups"].values() for path in paths
+                       if state["selected"].get(path, False))
         noun = "entry" if selected == 1 else "entries"
         return f"Send {selected} checked {noun} to the Windows Recycle Bin? Unchecked entries will be kept."
 
@@ -624,7 +637,7 @@ class FileSenseBackend(QObject):
     @Slot(str, bool, 'QVariantList', str, str, str)
     def previewRule(self, roots_text, include_subfolders, conditions, action, destination, conflict_policy):
         roots = tuple(value.strip() for value in roots_text.split(";") if value.strip())
-        roots = tuple(str(path) for path in __import__("file_search")._collapse_roots(roots))
+        roots = tuple(str(path) for path in _collapse_roots(roots))
         if not roots:
             self._rule_plan = []; self._rows = []; self._status = "Add at least one monitored folder."; self.changed.emit(); return
         if any(not Path(root).expanduser().is_dir() for root in roots):
@@ -1941,9 +1954,15 @@ class FileSenseBackend(QObject):
     @Slot(str, str, bool)
     @Slot(str, str, bool, 'QVariantList')
     @Slot(str, str, bool, 'QVariantList', 'QVariantList')
-    def quickScanAt(self, root, kind, include_subfolders=True, conditions=None, excluded_paths=None):
+    @Slot(str, str, bool, 'QVariantList', 'QVariantList', str)
+    def quickScanAt(self, root, kind, include_subfolders=True, conditions=None, excluded_paths=None, result_scope="find"):
+        result_scope = "rule" if str(result_scope).casefold() == "rule" else "find"
         roots = tuple(x.strip() for x in str(root).split(";") if x.strip())
-        if not roots or not any(Path(value).is_dir() for value in roots): self._status = "Choose a valid folder to scan."; self.changed.emit(); return
+        if not roots or not any(Path(value).is_dir() for value in roots):
+            message = "Choose a valid folder to scan."
+            if kind == "duplicates":
+                self._duplicate_results[result_scope]["status"] = message
+            self._status = message; self.changed.emit(); return
         condition_keys = ("logic", "field", "operator", "typeValue", "value")
         normalized_conditions = []
         for condition in conditions or ():
@@ -1963,16 +1982,24 @@ class FileSenseBackend(QObject):
         if kind == "duplicates" and conditions:
             for condition in conditions:
                 if condition.get("field") == "File Type" and not condition.get("typeValue", "").strip():
-                    self._status = "Choose a file type for every File Type condition."; self.changed.emit(); return
+                    message = "Choose a file type for every File Type condition."
+                    self._duplicate_results[result_scope]["status"] = message
+                    self._status = message; self.changed.emit(); return
                 if condition.get("field") == "File Extension" and not condition.get("value", "").strip():
-                    self._status = "Enter an extension for every File Extension condition."; self.changed.emit(); return
-        worker = QuickDiscoveryWorker(kind, Path(roots[0]), conditions)
+                    message = "Enter an extension for every File Extension condition."
+                    self._duplicate_results[result_scope]["status"] = message
+                    self._status = message; self.changed.emit(); return
+        worker = QuickDiscoveryWorker(kind, Path(roots[0]), conditions, result_scope)
         worker.root = ";".join(roots)
         worker.include_subfolders = include_subfolders
         worker.excluded_paths = excluded_paths or []
         worker.completed.connect(self._quick_done)
         self._workers.append(worker)
         self._quick_kind = kind
+        if kind == "duplicates":
+            state = self._duplicate_results[result_scope]
+            state["busy"] = True
+            state["status"] = f"Searching {len(roots)} selected folder(s) for {kind}…"
         self._status = f"Searching {len(roots)} selected folder(s) for {kind}…"; self.changed.emit()
         worker.start()
 
@@ -2007,52 +2034,75 @@ class FileSenseBackend(QObject):
                 result = result and not outcomes[index]
         return result
 
-    def _quick_done(self, rows, error):
-        self._duplicate_groups = defaultdict(list)
-        self._duplicate_delete_selected = {}
-        self._rows = []
+    def _quick_done(self, rows, error, result_scope="find"):
+        result_scope = "rule" if str(result_scope).casefold() == "rule" else "find"
+        state = self._duplicate_results[result_scope]
+        groups = defaultdict(list)
+        selected = {}
+        result_rows = []
         group_sizes = defaultdict(set)
         for size, path, group, item_type in rows:
             if group and item_type == "File":
                 group_sizes[group].add(size)
         for size, path, group, item_type in rows:
             if group:
-                self._duplicate_groups[group].append(str(path))
-                self._duplicate_delete_selected[str(path)] = False
+                groups[group].append(str(path))
+                selected[str(path)] = False
             comparison = "—"
             if group and item_type == "File":
                 comparison = "Same size" if len(group_sizes[group]) == 1 else "Different sizes"
-            self._rows.append({"name": path.name, "detail": f"{item_type} · {format_bytes(size)}" + (f" · duplicate group {group}" if group else ""), "path": str(path), "duplicateGroup": group, "deleteSelected": False, "fileType": item_type, "size": size, "sizeText": format_bytes(size) if item_type == "File" else "—", "sizeComparison": comparison})
-        groups_found = len(self._duplicate_groups)
+            result_rows.append({"name": path.name, "detail": f"{item_type} · {format_bytes(size)}" + (f" · duplicate group {group}" if group else ""), "path": str(path), "duplicateGroup": group, "deleteSelected": False, "fileType": item_type, "size": size, "sizeText": format_bytes(size) if item_type == "File" else "—", "sizeComparison": comparison})
+        groups_found = len(groups)
         if getattr(self, "_quick_kind", "duplicates") == "duplicates":
             issue_note = " · scan notices" if error else ""
-            self._status = f"Found {groups_found:,} duplicate-name group(s), {len(rows):,} entries{issue_note}."
-            if error: self._status += " " + error
+            status = f"Found {groups_found:,} duplicate-name group(s), {len(rows):,} entries{issue_note}."
+            if error: status += " " + error
+            state.update(rows=result_rows, groups=groups, selected=selected, status=status, busy=False)
+            self._duplicate_groups = groups
+            self._duplicate_delete_selected = selected
+            self._status = status
             log_activity(self, "Duplicate scan", f"Found {groups_found:,} duplicate-name group(s), {len(rows):,} entries{issue_note}.")
         else:
             self._status = f"Found {len(rows):,} matching files." + (f" Scan notices: {error}" if error else "")
         self.changed.emit()
 
+    @Slot(str)
+    def setDuplicateMode(self, scope):
+        self._duplicate_active_scope = "rule" if str(scope).casefold() == "rule" else "find"
+        self.changed.emit()
+
     @Slot(str, bool)
-    def setDuplicateDeleteSelected(self, path, selected):
-        self._duplicate_delete_selected[path] = selected
-        self._rows = [{**row, "deleteSelected": selected if row.get("path") == path else row.get("deleteSelected", False)} for row in self._rows]
+    @Slot(str, bool, str)
+    def setDuplicateDeleteSelected(self, path, selected, result_scope=None):
+        scope = ("rule" if str(result_scope).casefold() == "rule" else "find") if result_scope is not None else self._duplicate_active_scope
+        state = self._duplicate_results[scope]
+        state["selected"][path] = selected
+        state["rows"] = [{**row, "deleteSelected": selected if row.get("path") == path else row.get("deleteSelected", False)} for row in state["rows"]]
+        if scope == self._duplicate_active_scope:
+            self._duplicate_delete_selected = state["selected"]
         self.changed.emit()
 
     @Slot()
-    def resolveDuplicates(self):
+    @Slot(str)
+    def resolveDuplicates(self, result_scope=None):
+        scope = ("rule" if str(result_scope).casefold() == "rule" else "find") if result_scope is not None else self._duplicate_active_scope
+        state = self._duplicate_results[scope]
+        duplicate_groups = state["groups"]
+        delete_selected = state["selected"]
         removed = 0; skipped = 0; failed = 0
-        keepers = {path for group, paths in self._duplicate_groups.items()
-                   for path in paths if not self._duplicate_delete_selected.get(path, False)}
-        to_remove_all = [Path(path) for paths in self._duplicate_groups.values() for path in paths
-                         if self._duplicate_delete_selected.get(path, False)]
+        keepers = {path for group, paths in duplicate_groups.items()
+                   for path in paths if not delete_selected.get(path, False)}
+        to_remove_all = [Path(path) for paths in duplicate_groups.values() for path in paths
+                         if delete_selected.get(path, False)]
         if any(source.is_dir() and any(source != Path(keeper) and source in Path(keeper).parents
                                        for keeper in keepers) for source in to_remove_all):
-            self._status = "Review folder choices: a folder marked for deletion contains an unchecked entry that would be kept. Mark the nested entry for deletion or uncheck the folder."
+            message = "Review folder choices: a folder marked for deletion contains an unchecked entry that would be kept. Mark the nested entry for deletion or uncheck the folder."
+            state["status"] = message
+            self._status = message
             self.changed.emit()
             return
-        for group, paths in self._duplicate_groups.items():
-            to_remove = [path for path in paths if self._duplicate_delete_selected.get(path, False)]
+        for group, paths in duplicate_groups.items():
+            to_remove = [path for path in paths if delete_selected.get(path, False)]
             for raw in to_remove:
                 path = Path(raw)
                 try:
@@ -2060,9 +2110,18 @@ class FileSenseBackend(QObject):
                     send_to_recycle_bin(path)
                     removed += 1
                 except (OSError, PermissionError): failed += 1
-        self._rows = [row for row in self._rows if Path(row["path"]).exists()]
+        state["rows"] = [row for row in state["rows"] if Path(row["path"]).exists()]
+        state["groups"] = {group: [path for path in paths if Path(path).exists()]
+                            for group, paths in duplicate_groups.items()}
+        state["groups"] = {group: paths for group, paths in state["groups"].items() if paths}
+        state["selected"] = {path: selected for path, selected in delete_selected.items() if Path(path).exists()}
         noun = "entry" if removed == 1 else "entries"
-        self._status = f"Sent {removed:,} checked {noun} to the Recycle Bin; kept unchecked entries · skipped {skipped:,} · failed {failed:,}."
+        status = f"Sent {removed:,} checked {noun} to the Recycle Bin; kept unchecked entries · skipped {skipped:,} · failed {failed:,}."
+        state["status"] = status
+        if scope == self._duplicate_active_scope:
+            self._duplicate_groups = state["groups"]
+            self._duplicate_delete_selected = state["selected"]
+        self._status = status
         if removed: log_activity(self, "Duplicate cleanup", self._status)
         self.changed.emit()
 

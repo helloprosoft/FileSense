@@ -16,22 +16,22 @@ FileSense provides tools to organize files, find same-name entries, inspect disk
 
 ```text
 FileSense/
-├── assets/                 # App icons, illustrations, and installer artwork
-├── docs/                   # Installation, user, and developer guides
+├── FileSense.py            # Source-tree launcher
+├── README.md               # Project overview and user guide
+├── LICENSE                 # GitHub repository license terms
+├── requirements.txt        # Runtime dependency
+├── src/filesense/          # Application modules
+├── tools/                  # Offline activation-key utilities
+├── assets/                 # App icons, illustrations, installer artwork
 ├── qml/                    # Qt Quick interface
-├── *.py                    # App entry point, modules, and shared backend
-├── requirements.txt        # Runtime dependency for source/build machines
-├── requirements-build.txt  # Build-only PyInstaller dependency
-├── build_exe.bat           # Windows PyInstaller build script
-├── FileSense.spec          # PyInstaller configuration
-├── pyinstaller_hooks/      # Hook that limits bundled Qt QML modules
-├── installer.iss           # Inno Setup installer configuration
-└── EULA.txt                # Product license shown by the installer
+├── docs/                   # Installation, user, and developer guides
+├── legal/EULA.txt          # Product EULA used by the installer
+└── packaging/              # Build deps, PyInstaller, build script, installer setup
 ```
 
 ## License
 
-FileSense and its source code are proprietary; public GitHub visibility does not grant permission to reuse or redistribute the code. The application is licensed for personal, non-commercial use under the [End User License Agreement](EULA.txt). See [LICENSE](LICENSE) for the repository terms. Third-party components retain their own licenses.
+FileSense and its source code are proprietary; public GitHub visibility does not grant permission to reuse or redistribute the code. The application is licensed for personal, non-commercial use under the [End User License Agreement](legal/EULA.txt). See [LICENSE](LICENSE) for the repository terms. Third-party components retain their own licenses.
 
 Generated `build/`, `dist/`, virtual environments, signing keys, and installer binaries are local build/release outputs and are excluded from Git. Attach the installer and portable package to a GitHub Release instead of committing those binaries to the source tree.
 
@@ -39,7 +39,7 @@ Generated `build/`, `dist/`, virtual environments, signing keys, and installer b
 
 Choose a module from the left navigation or Home page. Searches and scans are started manually; opening a module does not start a scan. Results can take time on large folders or drives. The app may skip inaccessible locations, symbolic links, or items that change during a scan, and reports scan notices when available.
 
-For normal use, install FileSense with `ProSoft-FileSense-Setup.exe`. The installer includes the runtime, so Python does not need to be installed on the Windows PC. For portable use, copy the complete `dist\\FileSense` folder and run `FileSense.exe` from it; the executable needs the neighboring runtime files. To build from source, use Python 3.10 or newer on the build PC and run `build_exe.bat`.
+For normal use, install FileSense with `ProSoft-FileSense-Setup.exe`. The installer includes the runtime, so Python does not need to be installed on the Windows PC. For portable use, copy the complete `dist\\FileSense` folder and run `FileSense.exe` from it; the executable needs the neighboring runtime files. To build from source, use Python 3.10 or newer on the build PC and run `packaging\\build_exe.bat`.
 
 ## Home
 

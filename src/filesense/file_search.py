@@ -32,7 +32,7 @@ else:
         PrimaryPushButton, PushButton, StrongBodyLabel, SubtitleLabel,
     )
 
-from app_common import (
+from .app_common import (
     CATEGORIES, CheckBox, QDateEdit, QHeaderView, QProgressBar, QTableWidgetItem, TableWidget,
     TitleLabel, file_type, format_bytes,
 )
