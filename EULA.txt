@@ -1,0 +1,60 @@
+PROSOFT - FILESENSE
+END USER LICENSE AGREEMENT
+
+Effective date: November 16, 2026
+
+PLEASE READ THIS AGREEMENT BEFORE INSTALLING OR USING PROSOFT - FILESENSE. BY SELECTING “I AGREE” IN THE INSTALLER OR BY INSTALLING, COPYING, OR USING THE SOFTWARE, YOU AGREE TO THESE TERMS. IF YOU DO NOT AGREE, SELECT “I DO NOT AGREE” OR CANCEL SETUP, AND DO NOT INSTALL OR USE THE SOFTWARE.
+
+1. Who this agreement is with
+
+This agreement is between you and ProSoft, the publisher of ProSoft - FileSense (“ProSoft,” “we,” or “us”). Questions about this agreement may be sent to hello.prosoft.at@gmail.com.
+
+2. License and permitted use
+
+Subject to this agreement, ProSoft grants you a limited, personal, non-exclusive, non-transferable license to install and use ProSoft - FileSense (“Software”) on devices you own or control, solely for your own personal, non-commercial purposes. This license is for an individual acting in a personal capacity. It does not authorize use by or for a business, employer, organization, or other person.
+
+The Software may be offered as a trial and may require activation. Your use is also subject to any trial period and activation conditions presented in the Software.
+
+3. No commercial use
+
+You may not use the Software, or any output or service it provides, for a commercial purpose. Commercial use includes using it in the course of operating or supporting a business or professional practice; processing files for a business, employer, client, or customer; providing paid or monetized services; or using it to generate revenue or other commercial benefit. If you need business or commercial use, contact ProSoft for separate written authorization before using the Software for that purpose.
+
+4. Restrictions
+
+You may not, and may not permit anyone else to:
+
+- sell, rent, lease, sublicense, distribute, or make the Software available to others;
+- copy or modify the Software except for a reasonable backup copy where the law allows it;
+- remove or alter copyright, trademark, or other ownership notices;
+- reverse engineer, decompile, or disassemble the Software, except to the extent a restriction is prohibited by applicable law; or
+- use the Software unlawfully or in a way that infringes another person’s rights.
+
+5. Ownership and third-party components
+
+The Software is licensed, not sold. ProSoft and its licensors retain all rights in the Software except for the limited license expressly granted above. The Software may include third-party components, which remain subject to their respective license terms.
+
+6. Your files and responsibility
+
+The Software can scan, organize, move, or remove files based on actions you select. You are responsible for reviewing those actions and maintaining backups of important data before proceeding. ProSoft does not acquire ownership of your files through this agreement.
+
+7. Updates and changes
+
+ProSoft may offer updates or revised versions. Unless an update comes with different license terms, this agreement applies to the update. ProSoft is not required by this agreement to provide updates, support, or maintenance.
+
+8. Term and termination
+
+This agreement begins when you accept it and continues until terminated. Your license ends automatically if you materially breach this agreement. When it ends, you must stop using the Software and delete or destroy copies in your possession or control. Sections that by their nature should continue after termination will continue to apply.
+
+9. Warranty disclaimer
+
+TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, THE SOFTWARE IS PROVIDED “AS IS” AND “AS AVAILABLE,” WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, WHETHER EXPRESS, IMPLIED, OR STATUTORY, INCLUDING IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT. PROSOFT DOES NOT WARRANT THAT THE SOFTWARE WILL BE ERROR-FREE, UNINTERRUPTED, OR SUITABLE FOR YOUR PARTICULAR NEEDS. THIS SECTION DOES NOT EXCLUDE ANY WARRANTY OR RIGHT THAT APPLICABLE LAW DOES NOT ALLOW TO BE EXCLUDED.
+
+10. Limitation of liability
+
+TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, PROSOFT WILL NOT BE LIABLE FOR INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL LOSS, OR FOR LOSS OF DATA, PROFITS, REVENUE, OR BUSINESS, ARISING OUT OF OR RELATING TO THE SOFTWARE OR THIS AGREEMENT. TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, PROSOFT’S TOTAL LIABILITY FOR ALL CLAIMS RELATING TO THE SOFTWARE OR THIS AGREEMENT WILL NOT EXCEED THE AMOUNT YOU PAID TO PROSOFT FOR THE SOFTWARE IN THE 12 MONTHS BEFORE THE EVENT GIVING RISE TO THE CLAIM; IF YOU PAID NOTHING, THE LIMIT IS ZERO. NOTHING IN THIS AGREEMENT LIMITS LIABILITY THAT APPLICABLE LAW DOES NOT ALLOW TO BE LIMITED.
+
+11. General
+
+If a provision of this agreement is unenforceable, it will be limited to the minimum extent necessary, and the remaining provisions will continue to apply. This agreement is the complete agreement between you and ProSoft about your license to the Software and replaces prior discussions about that license. Any change or additional permission must be in writing from ProSoft. Nothing in this agreement takes away rights that applicable law grants you and does not permit you to waive.
+
+Contact: hello.prosoft.at@gmail.com
