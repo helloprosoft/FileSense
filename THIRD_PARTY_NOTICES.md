@@ -79,12 +79,12 @@ through the following location:
 Source archive location:
 [INSERT VERIFIED SOURCE ARCHIVE URL]
 
-Qt version: 6.12.0
-https://download.qt.io/official_releases/qt/
-PySide6 version: 6.12.0
-https://pypi.org/project/PySide6/6.12.0/
-Shiboken6 version: 6.12.0
-https://pypi.org/project/shiboken6/6.12.0/
+- Qt version: 6.12.0
+  https://download.qt.io/official_releases/qt/
+- PySide6 version: 6.12.0
+  https://pypi.org/project/PySide6/6.12.0/
+- Shiboken6 version: 6.12.0
+  https://pypi.org/project/shiboken6/6.12.0/
 
 The source distribution includes applicable source
 code, modifications, license texts and build
