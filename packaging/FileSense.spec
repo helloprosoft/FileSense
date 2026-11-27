@@ -61,7 +61,7 @@ def qml_datas():
 
 
 datas = [(str(ROOT / "assets"), "assets"), (str(ROOT / "qml"), "qml"),
-         (str(ROOT / "README.md"), ".")]
+         (str(ROOT / "README_APP.md"), ".")]
 datas += qml_datas()
 binaries = []
 hiddenimports = []

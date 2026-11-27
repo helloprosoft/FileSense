@@ -922,7 +922,49 @@ class FileSenseBackend(QObject):
                 } for x in entries[:30]]
             except Exception as e: self._status = str(e)
         elif page == "Read Me":
-            try: self._status = resource_path("README.md").read_text(encoding="utf-8")
+            try:
+                readme_path = resource_path("README_APP.md")
+                readme = readme_path.read_text(encoding="utf-8")
+
+                readme = re.sub(r"<p\b[^>]*>", "", readme, flags=re.IGNORECASE)
+                readme = re.sub(r"</p\s*>", "\n\n", readme, flags=re.IGNORECASE)
+
+                def convert_readme_html_image(match):
+                    source = match.group(1).strip()
+                    if source.startswith(("https://", "http://")):
+                        return ""
+                    image_path = (readme_path.parent / source).resolve()
+                    if image_path.is_file():
+                        label = image_path.stem.replace("_", " ")
+                        return f"![{label}]({image_path.as_uri()})"
+                    return ""
+
+                readme = re.sub(
+                    r'<img\b[^>]*\bsrc=["\']([^"\']+)["\'][^>]*>',
+                    convert_readme_html_image,
+                    readme,
+                    flags=re.IGNORECASE,
+                )
+
+                def localize_readme_image(match):
+                    prefix, relative_path, suffix = match.groups()
+                    image_path = (readme_path.parent / relative_path).resolve()
+                    if image_path.is_file():
+                        return prefix + image_path.as_uri() + suffix
+                    return match.group(0)
+
+                readme = re.sub(
+                    r'(!\[[^\]]*\]\()([./\\]*assets/[^)]+)(\))',
+                    localize_readme_image,
+                    readme,
+                )
+                readme = re.sub(
+                    r'((?:src|href)=["\'])([./\\]*assets/[^"\']+)(["\'])',
+                    localize_readme_image,
+                    readme,
+                    flags=re.IGNORECASE,
+                )
+                self._status = readme
             except OSError: self._status = "The user guide is not available in this installation."
         self.changed.emit()
 
