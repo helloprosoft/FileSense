@@ -1,6 +1,6 @@
 # FileSense Proprietary License
 
-Copyright © 2026 [Copyright Holder]. All rights reserved.
+Copyright © 2026 ProSoft. All rights reserved.
 
 FileSense is proprietary software developed and maintained by [Copyright Holder].
 
@@ -10,26 +10,25 @@ The FileSense application, including its original source code, design, interface
 
 ## 2. Permission to Use
 
-Users are granted a limited, non-exclusive, non-transferable license to download, install and use FileSense for personal or business purposes, subject to the terms of this license.
+Users are granted a limited, personal, non-exclusive, non-transferable and non-commercial license to download, install and use FileSense for personal purposes only, subject to the terms of this license and the FileSense End User License Agreement (EULA).
 
 ## 3. Restrictions
 
 Without prior written permission from the copyright holder, users may not:
 
+- Use FileSense for commercial or business purposes.
+- Sell, rent, lease, sublicense or commercially redistribute FileSense.
 - Copy, modify or redistribute the proprietary portions of FileSense.
-- Reverse engineer or decompile the proprietary portions, except where permitted by applicable law.
-- Sell, sublicense or commercially redistribute FileSense or its proprietary components.
-- Remove copyright notices or branding.
+- Reverse engineer, decompile or disassemble the proprietary portions, except where permitted by applicable law.
+- Remove copyright notices, branding or proprietary notices.
 
 ## 4. Third-Party Components
 
 FileSense incorporates third-party software, including Qt, PySide6 and other open-source dependencies.
 
-These components are governed by their respective licenses, which remain applicable independently of this license.
+These components remain subject to their respective licenses. Nothing in this license restricts rights granted under applicable third-party licenses, including the GNU Lesser General Public License (LGPL).
 
-Nothing in this license restricts rights granted to users under applicable third-party open-source licenses, including the GNU Lesser General Public License (LGPL).
-
-In particular, users retain the rights granted by the LGPL to replace, modify and use covered LGPL components.
+Users retain all applicable rights granted by those third-party licenses, including rights to replace, modify and use covered LGPL libraries.
 
 ## 5. Disclaimer of Warranty
 
@@ -39,8 +38,19 @@ FileSense is provided "AS IS", without warranties of any kind, to the maximum ex
 
 To the maximum extent permitted by applicable law, the copyright holder shall not be liable for indirect, incidental or consequential damages arising from the use of FileSense.
 
-## 7. Reservation of Rights
+## License & Copyright
 
-All rights not expressly granted under this license are reserved by the copyright holder.
+FileSense is proprietary, source-available software developed by Prosoft.
 
-For third-party component licensing information, refer to THIRD_PARTY_NOTICES.md.
+The source code is publicly accessible for viewing on GitHub. However, FileSense is not released under an open-source license, and no general permission is granted to copy, modify, redistribute, or commercially exploit its proprietary components.
+
+GitHub users may view and fork this repository through GitHub in accordance with GitHub's Terms of Service.
+
+The downloadable application is governed by the FileSense End User License Agreement (EULA).
+
+Third-party components, including Qt and PySide6, remain subject to their respective licenses.
+
+For details, see:
+- [LICENSE](LICENSE)
+- [EULA](legal/EULA.txt)
+- [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)
