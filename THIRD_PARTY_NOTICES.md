@@ -66,7 +66,64 @@ Users retain the rights granted by the applicable LGPL licenses, including the a
 
 For complete licensing information, consult the applicable license texts and corresponding source distributions supplied with the release.
 
-## 7. License References
+
+## 7. LGPL Source Code Availability
+
+FileSense incorporates Qt and PySide6 components
+under their applicable open-source licensing terms.
+
+The corresponding source code for the LGPL-covered
+components distributed with FileSense is provided
+through the following location:
+
+Source archive location:
+[INSERT VERIFIED SOURCE ARCHIVE URL]
+
+Qt version: 6.12.0
+https://download.qt.io/official_releases/qt/
+PySide6 version: 6.12.0
+https://pypi.org/project/PySide6/6.12.0/
+Shiboken6 version: 6.12.0
+https://pypi.org/project/shiboken6/6.12.0/
+
+The source distribution includes applicable source
+code, modifications, license texts and build
+instructions for the covered components.
+
+Users retain the rights granted under the applicable
+LGPL licenses, including the right to modify and
+replace covered libraries, subject to those licenses.
+
+For complete licensing information, refer to:
+https://www.qt.io/development/open-source-lgpl-obligations
+
+
+## 8. Qt WebEngine and Chromium
+
+FileSense may include Qt WebEngine components
+for browser-related functionality.
+
+Qt WebEngine incorporates Chromium and other
+third-party software components.
+
+These components remain subject to their
+respective open-source licenses.
+
+The applicable copyright notices and license
+texts for the components included in this
+distribution are provided in the accompanying
+third-party licensing documentation.
+
+Official references:
+
+- Qt WebEngine Licensing:
+  https://doc.qt.io/qtforpython-6/overviews/qtwebengine-licensing.html
+
+- Qt Third-Party Licenses:
+  https://doc.qt.io/qt-6/licenses-used-in-qt.html
+
+
+## 9. License References
 
 - Qt Licensing: [https://doc.qt.io/qt-6.12/licensing.html](https://doc.qt.io/qt-6.12/licensing.html)
 - Qt for Python: [https://doc.qt.io/qtforpython-6/](https://doc.qt.io/qtforpython-6/)
