@@ -38,19 +38,8 @@ FileSense is provided "AS IS", without warranties of any kind, to the maximum ex
 
 To the maximum extent permitted by applicable law, the copyright holder shall not be liable for indirect, incidental or consequential damages arising from the use of FileSense.
 
-## License & Copyright
+## 7. Reservation of Rights
 
-FileSense is proprietary, source-available software developed by Prosoft.
+All rights not expressly granted under this license are reserved by the copyright holder.
 
-The source code is publicly accessible for viewing on GitHub. However, FileSense is not released under an open-source license, and no general permission is granted to copy, modify, redistribute, or commercially exploit its proprietary components.
-
-GitHub users may view and fork this repository through GitHub in accordance with GitHub's Terms of Service.
-
-The downloadable application is governed by the FileSense End User License Agreement (EULA).
-
-Third-party components, including Qt and PySide6, remain subject to their respective licenses.
-
-For details, see:
-- [LICENSE](LICENSE)
-- [EULA](legal/EULA.txt)
-- [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)
+For third-party component licensing information, refer to THIRD_PARTY_NOTICES.md.
