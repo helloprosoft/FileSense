@@ -1,4 +1,11 @@
 ![Logo](assets/github_banner.png)
+<p align="center">
+  <img src="https://img.shields.io/badge/Status-Stable-brightgreen">
+  <img src="https://img.shields.io/badge/Platform-Windows%2011-blue">
+  <img src="https://img.shields.io/github/license/helloprosoft/FileSense">
+  <img src="https://img.shields.io/github/v/release/helloprosoft/FileSense">
+  <img src="https://img.shields.io/github/downloads/helloprosoft/FileSense/total">
+</p>
 # FileSense 2.0.0
 
 **One smarter way to manage your PC.**
