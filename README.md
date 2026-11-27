@@ -1,3 +1,13 @@
+![Logo](assets/github_banner.png)
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Status-Stable-brightgreen">
+  <img src="https://img.shields.io/badge/Platform-Windows%2011-blue">
+  <img src="https://img.shields.io/badge/License-Proprietary-red">
+  <img src="https://img.shields.io/github/v/release/helloprosoft/FileSense">
+  <img src="https://img.shields.io/github/downloads/helloprosoft/FileSense/total">
+</p>
+
 # FileSense 2.0.0
 
 **One smarter way to manage your PC.**
@@ -42,6 +52,9 @@ Choose a module from the left navigation or Home page. Searches and scans are st
 For normal use, install FileSense with `ProSoft-FileSense-Setup.exe`. The installer includes the runtime, so Python does not need to be installed on the Windows PC. For portable use, copy the complete `dist\\FileSense` folder and run `FileSense.exe` from it; the executable needs the neighboring runtime files. To build from source, use Python 3.10 or newer on the build PC and run `packaging\\build_exe.bat`.
 
 ## Home
+<p align="center">
+  <img src="assets/screenshots/1FileSense_Home.png" width="900">
+</p>
 
 Home gives access to the six main tools:
 
@@ -59,6 +72,9 @@ Use a module card or the left navigation to open a tool. Home does not scan your
 File Organizer has **Quick Organize** and **Build a Rule** tabs. Both work on files, show a preview first, and require you to run the operation explicitly.
 
 ### Quick Organize
+<p align="center">
+  <img src="assets/screenshots/2FileSense_FileOrganizer_Quick.png" width="900">
+</p>
 
 1. Choose a source folder and optionally add excluded folders inside it.
 2. Turn on **Include subfolders** to scan below the source folder. Excluded folders are skipped during a recursive scan.
@@ -75,6 +91,9 @@ Files are sorted by extension into Compressed, Video, Audio, Images, Documents, 
 Files are checked again before the operation. If a source file has been removed, is no longer a regular file, becomes excluded, or no longer belongs to its previewed category, it is skipped. The operation uses the file as it exists when organizing begins; preview again after changing the folder or settings.
 
 ### Build a Rule
+<p align="center">
+  <img src="assets/screenshots/3FileSense_FileOrganizer_BuildRule.png" width="900">
+</p>
 
 1. Add one or more existing monitored source folders. Separate typed paths with semicolons. Set **Include subfolders** if nested folders should be scanned.
 2. Add conditions in the order they should be evaluated.
@@ -103,15 +122,10 @@ Example: `File Type Is Images` **AND** `File Size Greater than 10 MB` **NOT** `F
 
 All condition fields must be filled in. At least one condition is required. If no files match, the preview reports that no files match; nothing is moved, copied, or deleted.
 
-## Duplicate Finder
-
-Duplicate Finder has **Find duplicates** and **Build a rule** tabs. Add one or more folders, choose whether to include subfolders, then select **Scan duplicates**. Folder names are not candidates; this module groups files that have the same name, ignoring case. It does not verify that their contents are identical. Sizes are shown for comparison, but equal sizes do not prove files are identical.
-
-In **Build a rule**, add conditions for File Type or File Extension to restrict which files are grouped. You can combine them in order with AND, OR, or NOT. For example, `File Type Is Images` AND `File Extension Is .png` considers only PNG images.
-
-Mark entries you want removed, then apply the selection. Checked files are sent to the Recycle Bin; unchecked files are kept. You can mark every entry in a group for deletion, so leave at least one unchecked if you want to retain a copy. Review folder selections carefully when folders contain nested entries. Each tab keeps its own scan and rule results.
-
 ## Storage Analyzer
+<p align="center">
+  <img src="assets/screenshots/4FileSense_StorageAnalyzer.png" width="900">
+</p>
 
 1. Choose a drive or browse to a folder.
 2. Select **Scan storage**. Opening the module or changing tabs does not start another scan.
@@ -123,6 +137,9 @@ Mark entries you want removed, then apply the selection. Checked files are sent 
 The volume summary uses Windows capacity and free-space information; Used Space is Capacity minus Free Space. File and folder totals come from the scan. Logical Size is the sum of file lengths. Allocated size is estimated from the volume allocation unit for regular files; compressed and sparse files use filesystem-reported sizes. The estimate may differ from Windows' exact disk accounting. Fast NTFS enumeration is available on NTFS volumes; it is a batched directory enumeration, not a direct Master File Table scan. Inaccessible paths are excluded and counted in scan notices.
 
 ## File Search & Finder
+<p align="center">
+  <img src="assets/screenshots/5FileSense_FileSearch.png" width="900">
+</p>
 
 1. Enter one or more existing drive or folder paths separated by semicolons, or add a drive/browse for a folder.
 2. Optionally exclude folders and set one or more filters.
@@ -132,7 +149,21 @@ Filters include filename contains, comma-separated extensions, file type, minimu
 
 The name filter is a case-insensitive substring. Extensions match the end of a filename, so `.jpg` matches `photo.jpg`. Type filters include Compressed, Video, Audio, Images, Documents, Programs, and Other. If filename is the only filter, matching folders may also appear; file type, extension, size, or date filters return files. When a drive root is selected, the scan is recursive even if **Include subfolders** is off; for a selected folder, that option controls whether nested folders are searched. Symbolic links and reparse points are skipped. Results are capped at 10,000; the status indicates if the limit is reached. Select results to Copy, Move, or Delete; Delete sends selected files to the Recycle Bin after confirmation. Double-click a result to open its location.
 
+## Duplicate Finder
+<p align="center">
+  <img src="assets/screenshots/7FileSense_DuplicateFinder_BuildRule.png" width="900">
+</p>
+
+Duplicate Finder has **Find duplicates** and **Build a rule** tabs. Add one or more folders, choose whether to include subfolders, then select **Scan duplicates**. Folder names are not candidates; this module groups files that have the same name, ignoring case. It does not verify that their contents are identical. Sizes are shown for comparison, but equal sizes do not prove files are identical.
+
+In **Build a rule**, add conditions for File Type or File Extension to restrict which files are grouped. You can combine them in order with AND, OR, or NOT. For example, `File Type Is Images` AND `File Extension Is .png` considers only PNG images.
+
+Mark entries you want removed, then apply the selection. Checked files are sent to the Recycle Bin; unchecked files are kept. You can mark every entry in a group for deletion, so leave at least one unchecked if you want to retain a copy. Review folder selections carefully when folders contain nested entries. Each tab keeps its own scan and rule results.
+
 ## Junk Cleaner
+<p align="center">
+  <img src="assets/screenshots/8FileSense_JunkCleaner.png" width="900">
+</p>
 
 Select **Scan cleanup** or **Rescan** to inspect supported locations. The module groups candidates into Recommended items and Other system/application items. Recommended candidates are preselected after scanning; group and category checkboxes let you change the selection. Review the selected size and item details before choosing **Clean selected**.
 
@@ -143,6 +174,9 @@ Regular selected files are sent to the Recycle Bin where possible. Delivery Opti
 FileSense does not clean browser history, cookies, passwords, clipboard contents, Windows network certificates, or general Windows event logs. These can contain personal data or be needed for security and diagnostics. Windows minidumps and Prefetch are optional because dumps can help diagnose crashes and clearing Prefetch may temporarily slow app launches.
 
 ## Startup Manager
+<p align="center">
+  <img src="assets/screenshots/9FileSense_StartupManager.png" width="900">
+</p>
 
 Choose **Scan autoruns** to read the current Windows state. The module does not scan automatically on entry. Use the category tabs to filter:
 
@@ -155,6 +189,9 @@ Choose **Scan autoruns** to read the current Windows state. The module does not 
 Select an entry to inspect its publisher, signature, file status, command, arguments, source, and location. Impact is an estimate, not a measured boot-time test. Use Enable/Restore or Disable for supported entries. FileSense asks for confirmation where Windows or the entry requires it. Service changes use a separate advanced confirmation and can affect Windows or installed software; protected services cannot be changed. Rescan to refresh from Windows after changes.
 
 ## Results, sorting, and Recent Activity
+<p align="center">
+  <img src="assets/screenshots/10FileSense_RecentActivity.png" width="900">
+</p>
 
 Where a result table supports sorting, select a column heading to change the order. Empty result panels explain how to start or adjust the current search/scan. Recent Activity shows up to 30 recorded actions, such as scans and completed file operations; it is a local activity log, not a Windows event log.
 
@@ -167,8 +204,6 @@ The device code is tied to the Windows installation and may change after reinsta
 ## License
 
 FileSense is proprietary software developed by Prosoft.
-
-The application source code is not publicly distributed.
 
 FileSense uses third-party open-source components, including Qt and PySide6, under their respective licenses.
 
