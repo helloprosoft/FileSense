@@ -1,4 +1,4 @@
-![Logo](assets\FSICO.png)
+![Logo](assets/FSICO.png)
 # FileSense 2.0.0
 
 **One smarter way to manage your PC.**
