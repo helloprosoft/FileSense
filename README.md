@@ -206,8 +206,18 @@ The device code is tied to the Windows installation and may change after reinsta
 
 ## License
 
-FileSense is proprietary software developed by Prosoft.
+## License
 
-FileSense uses third-party open-source components, including Qt and PySide6, under their respective licenses.
+FileSense is proprietary, source-available software developed by ProSoft.
 
-Please refer to LICENSE and THIRD_PARTY_NOTICES.md for licensing information.
+The application is licensed strictly for **personal, non-commercial use**. Business, organizational, professional, or commercial use requires prior written authorization from ProSoft.
+
+Public availability of the source code on GitHub does not grant general permission to copy, modify, redistribute, or commercially exploit the proprietary portions of FileSense. GitHub platform permissions remain subject to GitHub's Terms of Service.
+
+Third-party components, including Qt and PySide6, remain subject to their respective licenses. Nothing in the FileSense license restricts rights granted under those third-party licenses.
+
+For complete details, refer to:
+
+- [LICENSE](LICENSE)
+- [End User License Agreement](legal/EULA.txt)
+- [Third-Party Notices](THIRD_PARTY_NOTICES.md)
