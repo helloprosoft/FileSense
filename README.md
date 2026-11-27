@@ -150,13 +150,16 @@ Filters include filename contains, comma-separated extensions, file type, minimu
 The name filter is a case-insensitive substring. Extensions match the end of a filename, so `.jpg` matches `photo.jpg`. Type filters include Compressed, Video, Audio, Images, Documents, Programs, and Other. If filename is the only filter, matching folders may also appear; file type, extension, size, or date filters return files. When a drive root is selected, the scan is recursive even if **Include subfolders** is off; for a selected folder, that option controls whether nested folders are searched. Symbolic links and reparse points are skipped. Results are capped at 10,000; the status indicates if the limit is reached. Select results to Copy, Move, or Delete; Delete sends selected files to the Recycle Bin after confirmation. Double-click a result to open its location.
 
 ## Duplicate Finder
+
+Duplicate Finder has **Find duplicates** and **Build a rule** tabs. Add one or more folders, choose whether to include subfolders, then select **Scan duplicates**. Folder names are not candidates; this module groups files that have the same name, ignoring case. It does not verify that their contents are identical. Sizes are shown for comparison, but equal sizes do not prove files are identical.
+<p align="center">
+  <img src="assets/screenshots/6FileSense_DuplicateFinder_Quick.png" width="900">
+</p>
+
+In **Build a rule**, add conditions for File Type or File Extension to restrict which files are grouped. You can combine them in order with AND, OR, or NOT. For example, `File Type Is Images` AND `File Extension Is .png` considers only PNG images.
 <p align="center">
   <img src="assets/screenshots/7FileSense_DuplicateFinder_BuildRule.png" width="900">
 </p>
-
-Duplicate Finder has **Find duplicates** and **Build a rule** tabs. Add one or more folders, choose whether to include subfolders, then select **Scan duplicates**. Folder names are not candidates; this module groups files that have the same name, ignoring case. It does not verify that their contents are identical. Sizes are shown for comparison, but equal sizes do not prove files are identical.
-
-In **Build a rule**, add conditions for File Type or File Extension to restrict which files are grouped. You can combine them in order with AND, OR, or NOT. For example, `File Type Is Images` AND `File Extension Is .png` considers only PNG images.
 
 Mark entries you want removed, then apply the selection. Checked files are sent to the Recycle Bin; unchecked files are kept. You can mark every entry in a group for deletion, so leave at least one unchecked if you want to retain a copy. Review folder selections carefully when folders contain nested entries. Each tab keeps its own scan and rule results.
 
