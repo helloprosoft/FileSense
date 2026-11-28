@@ -8,7 +8,7 @@
   <img src="https://img.shields.io/github/downloads/helloprosoft/FileSense/total">
 </p>
 
-# FileSense 2.0.0
+# FileSense
 
 **One smarter way to manage your PC.**
 
@@ -203,8 +203,6 @@ Where a result table supports sorting, select a column heading to change the ord
 FileSense includes a 30-day trial. The top bar shows the remaining days. To activate, open the license dialog from the top bar, copy the device code, and send it to ✉️ **[hello.prosoft.at@gmail.com](mailto:hello.prosoft.at@gmail.com)**. The ProSoft team will return a key for that device. Enter the key in the activation window. Activation works offline; FileSense does not send the code automatically. If the trial has ended, the activation window appears when the app opens.
 
 The device code is tied to the Windows installation and may change after reinstalling Windows. Contact ✉️ **[hello.prosoft.at@gmail.com](mailto:hello.prosoft.at@gmail.com)** if you need a replacement.
-
-## License
 
 ## License
 
